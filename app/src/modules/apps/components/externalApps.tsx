@@ -1,145 +1,97 @@
 "use client";
 
-import { Button2, Button2Variant } from "@/modules/common/components/Button2";
-import { Select } from "@/modules/common/components/form/Select";
-import {
-  type ClassificationLevel,
-  type Entity,
-  type NoteType,
-} from "@prisma/client";
-import { useRouter } from "next/navigation";
-import { useId, useState } from "react";
-import { useForm, type SubmitHandler } from "react-hook-form";
-import toast from "react-hot-toast";
-import { FaSave, FaSpinner } from "react-icons/fa";
-import { Formatting } from "./Formatting";
+import Modal from "@/modules/common/components/Modal";
+import { useState } from "react";
+import { Button2, Button2Variant, Button2ColorSchema } from "@/modules/common/components/Button2";
 
-interface Props {
-  readonly entityId: Entity["id"];
-  readonly noteTypeId: NoteType["id"];
-  readonly classificationLevels: ClassificationLevel[];
-}
 
-interface FormValues {
-  content: string;
-  classificationLevelId: ClassificationLevel["id"];
-}
+export const AddAppModal = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    slug: "",
+    icon: "",
+    imageSrc: "",
+    tags: "",
+    url: "",
+  });
 
-export const addExternalApp = ({
-  entityId,
-  noteTypeId,
-  classificationLevels,
-}: Props) => {
-  const router = useRouter();
-  const { register, handleSubmit, reset } = useForm<FormValues>();
-  const [isLoading, setIsLoading] = useState(false);
-  const contentInputId = useId();
-  const classificationLevelSelectId = useId();
-
-  const onSubmit: SubmitHandler<FormValues> = async (data, e) => {
-    setIsLoading(true);
-
-    if (
-      !(e?.nativeEvent instanceof SubmitEvent) ||
-      !(e.nativeEvent.submitter instanceof HTMLButtonElement)
-    )
-      return;
-
-    try {
-      const response = await fetch(`/api/spynet/citizen/${entityId}/log`, {
-        method: "POST",
-        body: JSON.stringify({
-          type: "note",
-          content: data.content,
-          noteTypeId,
-          classificationLevelId: data.classificationLevelId,
-          confirmed:
-            e.nativeEvent.submitter.name === "confirmed"
-              ? "confirmed"
-              : undefined,
-        }),
-      });
-
-      if (response.ok) {
-        router.refresh();
-        toast.success("Erfolgreich gespeichert");
-        reset();
-      } else {
-        toast.error("Beim Speichern ist ein Fehler aufgetreten.");
-      }
-    } catch (error) {
-      toast.error("Beim Speichern ist ein Fehler aufgetreten.");
-      console.error(error);
-    }
-
-    setIsLoading(false);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const handleSubmit = async () => {
+    await externalapps({
+      ...form,
+      tags: form.tags.split(",").map((t) => t.trim()),
+    });
+    setIsOpen(false);
+    setForm({ name: "", slug: "", icon: "", imageSrc: "", tags: "", url: "" });
+  };
+
+  const fields: { label: string; name: keyof typeof form; placeholder?: string }[] = [
+    { label: "Name",      name: "name",     placeholder: "My App" },
+    { label: "Slug",      name: "slug",     placeholder: "my-app" },
+    { label: "Icon",      name: "icon",     placeholder: "🚀 or icon class" },
+    { label: "Image Src", name: "imageSrc", placeholder: "https://..." },
+    { label: "Tags",      name: "tags",     placeholder: "tag1, tag2" },
+    { label: "URL",       name: "url",      placeholder: "https://..." },
+  ];
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex justify-end mb-1">
-        <Formatting />
-      </div>
+    <>
+      <Button2
+        variant={Button2Variant.Primary}
+        colorSchema={Button2ColorSchema.Interaction}
+        onClick={() => setIsOpen(true)}
+      >
+        Add External App
+      </Button2>
 
-      <textarea
-        className="p-2 rounded-l bg-neutral-800 w-full"
-        id={contentInputId}
-        {...register("content", { required: true })}
-      />
+      <Modal
+        heading="Add External App"
+        isOpen={isOpen}
+        onRequestClose={() => setIsOpen(false)}
+      >
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px", minWidth: "400px" }}>
+          {fields.map(({ label, name, placeholder }) => (
+            <div key={name} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+              <label style={{ fontSize: "13px", fontWeight: 500, color: "#9ca3af" }}>
+                {label}
+              </label>
+              <input
+                name={name}
+                value={form[name]}
+                onChange={handleChange}
+                placeholder={placeholder}
+                style={{
+                  padding: "8px 10px", borderRadius: "6px",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  background: "rgba(255,255,255,0.05)",
+                  color: "white", fontSize: "14px", outline: "none",
+                }}
+              />
+            </div>
+          ))}
 
-      <div className="grid grid-cols-3 gap-1 mt-1">
-        {classificationLevels.length > 1 && (
-          <Select
-            id={classificationLevelSelectId}
-            {...register("classificationLevelId", { required: true })}
-            className="!bg-neutral-800"
-          >
-            {classificationLevels.map((classificationLevel) => (
-              <option
-                key={classificationLevel.id}
-                value={classificationLevel.id}
-              >
-                {classificationLevel.name}
-              </option>
-            ))}
-          </Select>
-        )}
-
-        {classificationLevels.length === 1 && classificationLevels[0] && (
-          <input
-            type="hidden"
-            {...register("classificationLevelId", {
-              value: classificationLevels[0].id,
-            })}
-          />
-        )}
-
-        <div className="flex gap-4 items-center justify-end col-start-3">
-          {/* <Button
-            type="submit"
-            disabled={isLoading}
-            title="Speichern"
-            variant="tertiary"
-            name="confirmed"
-            className="whitespace-nowrap text-left hidden sm:inline-flex"
-          >
-            {isLoading ? <FaSpinner className="animate-spin" /> : <FaSave />}
-            Speichern und
-            <br />
-            bestätigen
-          </Button> */}
-
-          <Button2
-            type="submit"
-            disabled={isLoading}
-            title="Speichern"
-            variant={Button2Variant.Secondary}
-          >
-            {isLoading ? <FaSpinner className="animate-spin" /> : <FaSave />}
-            Speichern
-          </Button2>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "8px" }}>
+            <Button2
+              variant={Button2Variant.Secondary}
+              colorSchema={Button2ColorSchema.Interaction}
+              onClick={() => setIsOpen(false)}
+            >
+              Cancel
+            </Button2>
+            <Button2
+              variant={Button2Variant.Primary}
+              colorSchema={Button2ColorSchema.Interaction}
+              onClick={handleSubmit}
+            >
+              Save
+            </Button2>
+          </div>
         </div>
-      </div>
-    </form>
+      </Modal>
+    </>
   );
 };
