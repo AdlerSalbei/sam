@@ -2,8 +2,10 @@ model ExternalApps {
   id                String    @id @default(cuid(2))
   name              String
   slug              String
+  description       String
   icon              String
   imageSrc          String
-  tags              String
+  tags              String[]
   url               String
+  team              String[]
 }

@@ -6,54 +6,30 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const schema = z.object({
-  name: z.string(),
-  slug: z.string(),
-  icon: z.string(),
-  imageSrc: z.string(),
-  tags: z.string(),
-  url: z.string()
+  id:          z.string().optional(),
+  name:        z.string(),
+  slug:        z.string(),
+  description: z.string(),
+  icon:        z.string(),
+  imageSrc:    z.string(),
+  tags:        z.string().transform((val) => JSON.parse(val) as string[]),
+  url:         z.string(),
+  team:        z.string(),
 });
 
-export const registerExternalApp = createAuthenticatedAction(
-  "registerExternalApp",
-  schema,
-  async (formData, authentication, data, t) => {
-    /**
-     * Authorize the request
-     */
-    if (!authentication.session.entity)
-      return {
-        error: t("Common.forbidden"),
-        requestPayload: formData,
-      };
+export const registerExternalApp = createAuthenticatedAction(schema, async (data) => {
+  const { id, ...fields } = data;
 
-    const externalApps = await prisma.externalApps.upsert({
-      where: {
-        slug: data.externalApps.slug,
-      },
-      update: {
-        name: data.externalApps.name,
-        icon: data.externalApps.icon,
-        imageSrc: data.externalApps.imageSrc,
-        tags: data.externalApps.tags,
-        url: data.externalApps.url,
-      },
-      create: {
-        name: data.externalApps.name,
-        icon: data.externalApps.icon,
-        imageSrc: data.externalApps.imageSrc,
-        tags: data.externalApps.tags,
-        url: data.externalApps.url,
-      },
-      select: {
-        id: true,
-      },
+  if (id) {
+    await prisma.ExternalApps.update({
+      where: { id },
+      data: fields,
     });
+  } else {
+    await prisma.ExternalApps.create({
+      data: fields,
+    });
+  }
 
-    revalidatePath("/app/apps/management");
-    
-    return {
-      success: t("Common.successfullySaved"),
-    };
-  },
-);
+  revalidatePath("/app/apps/management");
+});
