@@ -13,23 +13,29 @@ const schema = z.object({
   icon:        z.string(),
   imageSrc:    z.string(),
   tags:        z.string().transform((val) => JSON.parse(val) as string[]),
+  team:        z.string().transform((val) => JSON.parse(val) as string[]),
   url:         z.string(),
-  team:        z.string(),
 });
 
-export const registerExternalApp = createAuthenticatedAction(schema, async (data) => {
-  const { id, ...fields } = data;
+export const registerExternalApp = createAuthenticatedAction(
+  "registerExternalApp",
+  schema,
+  async (_formData, _authentication, data) => {
+    const { id, ...fields } = data;
 
-  if (id) {
-    await prisma.ExternalApps.update({
-      where: { id },
-      data: fields,
-    });
-  } else {
-    await prisma.ExternalApps.create({
-      data: fields,
-    });
-  }
+    if (id) {
+      await prisma.ExternalApps.update({
+        where: { id },
+        data: fields,
+      });
+    } else {
+      await prisma.ExternalApps.create({
+        data: fields,
+      });
+    }
 
-  revalidatePath("/app/apps/management");
-});
+    revalidatePath("/app/apps/management");
+
+    return { success: "App saved successfully" };  
+  },
+);

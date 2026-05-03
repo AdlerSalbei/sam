@@ -1,5 +1,5 @@
 import { requireAuthenticationPage } from "@/modules/auth/server";
-import { prisma } from "@/db";
+import { getExternalApps } from "@/modules/apps/queries";
 import { ExternalApps } from "@/modules/apps/components/externalApps";
 
 const cellStyle = { padding: "8px 12px", borderRight: "1px solid #e5e7eb" };
@@ -8,13 +8,13 @@ const headerStyle = { ...cellStyle, borderBottom: "4px solid #ccc", textAlign: "
 export default async function Page() {
   const authentication = await requireAuthenticationPage("/app/apps/management");
   await authentication.authorizePage("apps", "manage");
-  
-  const rows = await prisma.ExternalApps.findMany();
+
+  const rows = await getExternalApps();
 
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "12px" }}>
-        <ExternalApps existingApps={rows} />  {/* ← pass rows down */}
+        <ExternalApps existingApps={rows} />
       </div>
       <table style={{ borderCollapse: "collapse", width: "100%", border: "1px solid #e5e7eb" }}>
         <thead>

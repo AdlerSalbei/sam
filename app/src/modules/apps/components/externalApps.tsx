@@ -5,7 +5,8 @@ import { Button2, Button2Variant, Button2ColorSchema } from "@/modules/common/co
 import Modal from "@/modules/common/components/Modal";
 import * as FaIcons from "react-icons/fa";
 import Image from "next/image";
-import { registerExternalApp } from "@/modules/apps/actions/externalApps";
+import { registerExternalApp } from "@/modules/apps/actions/registerExternalApp.ts";
+import { useRouter } from "next/navigation";
 
 const ICON_LIST = Object.keys(FaIcons).filter((key) => key.startsWith("Fa"));
 
@@ -22,8 +23,14 @@ interface Props {
 }
 
 const emptyForm = {
-  name: "", slug: "", description: "", icon: "",
-  imageSrc: "", tags: "", url: "", team: "",
+  name: "", 
+  slug: "", 
+  description: "", 
+  icon: "",
+  imageSrc: "", 
+  tags: "", 
+  url: "", 
+  team: "",
 };
 
 export const ExternalApps = ({ existingApps }: Props) => {
@@ -32,6 +39,7 @@ export const ExternalApps = ({ existingApps }: Props) => {
   const [iconSearch, setIconSearch]         = useState("");
   const [imageMode, setImageMode]           = useState<ImageMode>("icon");
   const [form, setForm]                     = useState(emptyForm);
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -63,6 +71,8 @@ export const ExternalApps = ({ existingApps }: Props) => {
 
     setIsOpen(false);
     setForm(emptyForm);
+
+    router.refresh();
   };
 
   const filteredIcons = useMemo(
@@ -214,7 +224,6 @@ export const ExternalApps = ({ existingApps }: Props) => {
         </div>
       </Modal>
 
-      {/* ── Icon picker modal ── */}
       <Modal
         heading="Select an Icon"
         isOpen={iconPickerOpen}
