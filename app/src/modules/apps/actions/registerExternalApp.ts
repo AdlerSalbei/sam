@@ -8,7 +8,7 @@ import { z } from "zod";
 const schema = z.object({
   id:          z.cuid2().optional(),
   name:        z.string().min(1).max(255),
-  slug:        z.string(),
+  slug:        z.string().min(1).max(255).transform(value => value.replaceAll(" ", "")),
   description: z.string().min(1),
   icon:        z.string().optional(),
   imageSrc:    z.string().optional(),
@@ -21,13 +21,19 @@ export const registerExternalApp = createAuthenticatedAction(
   "registerExternalApp",
   schema,
   async (_formData, _authentication, data) => {
-    const { id, ...fields } = data;
 
-    await prisma.ExternalApps.upsert({
-      where: { id || 00000000-0000-0000-0000-000000000000},
-      update: { data: fields },
-      create: { data: data },
+  const { id, ...fields } = data;
+
+  if (id) {
+    await prisma.ExternalApps.update({
+      where: { id },
+      data: fields,
     });
+  } else {
+    await prisma.ExternalApps.create({
+      data: fields,
+    });
+  }
     
     revalidatePath("/app/apps/management");
 

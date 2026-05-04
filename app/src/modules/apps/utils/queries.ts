@@ -16,7 +16,7 @@ export const getAppLinks = cache(
     if (!authentication) return null;
 
     // Externe Apps aus der Datenbank laden
-    const dbExternalApps = await prisma.externalApps.findMany();
+    const dbExternalApps = await prisma.ExternalApps.findMany();
 
     const apps: App[] = await Promise.all([
       ...INTEGRATED_APPS.map(async (app) => {
@@ -48,7 +48,7 @@ export const getAppLinks = cache(
         };
       }),
       // Externe Apps aus DB mappen (kein Permission-Check nötig laut TODO)
-      ...dbExternalApps.map((externalApp) => {
+      ...dbExternalApps.map((externalApp: any) => {
         return {
           ...externalApp,
         };
