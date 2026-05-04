@@ -6,15 +6,15 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const schema = z.object({
-  id:          z.string().optional(),
-  name:        z.string(),
+  id:          z.cuid2().optional(),
+  name:        z.string().min(1).max(255),
   slug:        z.string(),
-  description: z.string(),
-  icon:        z.string(),
-  imageSrc:    z.string(),
+  description: z.string().min(1),
+  icon:        z.string().optional(),
+  imageSrc:    z.string().optional(),
   tags:        z.string().transform((val) => JSON.parse(val) as string[]),
   team:        z.string().transform((val) => JSON.parse(val) as string[]),
-  url:         z.string(),
+  url:         z.httpUrl(),
 });
 
 export const registerExternalApp = createAuthenticatedAction(
@@ -23,17 +23,12 @@ export const registerExternalApp = createAuthenticatedAction(
   async (_formData, _authentication, data) => {
     const { id, ...fields } = data;
 
-    if (id) {
-      await prisma.ExternalApps.update({
-        where: { id },
-        data: fields,
-      });
-    } else {
-      await prisma.ExternalApps.create({
-        data: fields,
-      });
-    }
-
+    await prisma.ExternalApps.upsert({
+      where: { id || 00000000-0000-0000-0000-000000000000},
+      update: { data: fields },
+      create: { data: data },
+    });
+    
     revalidatePath("/app/apps/management");
 
     return { success: "App saved successfully" };  
