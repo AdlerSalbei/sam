@@ -32,11 +32,11 @@ export const RadioFilter = ({
   });
 
   const setValueAndResetPagination = useCallback(
-    (newValue: string) => {
-      setValue(newValue);
+    async (newValue: string) => {
+      await setValue(newValue);
 
       if (resetCursorPagination) {
-        setPagination({
+        await setPagination({
           cursor: null,
           direction: null,
         });
@@ -57,15 +57,7 @@ export const RadioFilter = ({
   if (!defaultItem) defaultItem = items[0];
 
   return (
-    <div
-      className={clsx(
-        "background-secondary rounded-primary p-2 beveled-br",
-        className,
-      )}
-      style={{
-        "--bevel-size": "16px",
-      }}
-    >
+    <div className={clsx("bg-secondary p-2 corners-secondary", className)}>
       <p className="text-sm text-neutral-500">{label}</p>
 
       <RadioGroup

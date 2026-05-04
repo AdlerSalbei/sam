@@ -24,6 +24,7 @@ import image20250906NewLayout from "@/modules/changelog/assets/2025-09-06-new-la
 import image20251007sincome from "@/modules/changelog/assets/2025-10-07-sincome.png";
 import image20251013rolesHistory from "@/modules/changelog/assets/2025-10-13-roles-history.png";
 import image20260214RoleTooltip from "@/modules/changelog/assets/2026-02-14-role-tooltip.png";
+import image20260301CitizenPopover from "@/modules/changelog/assets/2026-03-01-citizen-popover.png";
 import { Link } from "@/modules/common/components/Link";
 import { SmallBadge } from "@/modules/common/components/SmallBadge";
 import { random } from "lodash";
@@ -35,16 +36,67 @@ import { FaCalendar, FaCopy } from "react-icons/fa";
 
 export default async function Page() {
   const authentication = await requireAuthenticationPage("/app/changelog");
-  const [showLogAnalyzer, showManageRoles, showUserRead, showGlobalStatistics] =
-    await Promise.all([
-      authentication.authorize("logAnalyzer", "read"),
-      authentication.authorize("role", "manage"),
-      authentication.authorize("user", "read"),
-      authentication.authorize("globalStatistics", "read"),
-    ]);
+  const [
+    showLogAnalyzer,
+    showManageRoles,
+    showUserRead,
+    showGlobalStatistics,
+    showSystemLog,
+  ] = await Promise.all([
+    authentication.authorize("logAnalyzer", "read"),
+    authentication.authorize("role", "manage"),
+    authentication.authorize("user", "read"),
+    authentication.authorize("globalStatistics", "read"),
+    authentication.authorize("systemLog", "read"),
+  ]);
 
   return (
     <div className="flex flex-col gap-4">
+      <Day heading="24. März 2026">
+        {showSystemLog ? (
+          <DayItem heading="System Log" badges={["Neu", "Apps"]}>
+            <p>
+              Es gibt eine neue App &ldquo;System Log&rdquo; welche eine
+              Auflistung aller Ereignisse im SAM anzeigt. Die Logs werden mit
+              der Zeit detaillierter und besser.
+            </p>
+
+            <p>
+              Es gibt eine neue Berechtigung unter &ldquo;Sonstiges&rdquo; um
+              den Zugriff auf das System Log zu limitieren. Benutzer mit dieser
+              Berechtigung können vertrauliche Informationen und
+              personenbezogene Daten einsehen.
+            </p>
+          </DayItem>
+        ) : (
+          <RedactedDayItem />
+        )}
+      </Day>
+
+      <Day heading="1. März 2026">
+        <DayItem heading="Tooltip für Citizen" badges={["Neu", "Citizen"]}>
+          <p>
+            Citizen haben nun ein Tooltip in welchem die wichtigsten Details zum
+            jeweiligen Citizen angezeigt werden. Von hier aus können direkt die
+            Rollen des Citizens eingesehen und bearbeitet werden.
+          </p>
+
+          <p>
+            Zukünftig werden hier auch die Organisationen angezeigt, in welchen
+            der Citizen Mitglied ist.
+          </p>
+
+          <Link href={image20260301CitizenPopover.src}>
+            <Image
+              quality={100}
+              src={image20260301CitizenPopover}
+              alt=""
+              loading="eager"
+            />
+          </Link>
+        </DayItem>
+      </Day>
+
       <Day heading="14. Februar 2026">
         <DayItem heading="Tooltip für Rollen" badges={["Neu", "Citizen"]}>
           <p>
@@ -63,7 +115,7 @@ export default async function Page() {
               quality={100}
               src={image20260214RoleTooltip}
               alt=""
-              loading="eager"
+              loading="lazy"
             />
           </Link>
         </DayItem>
@@ -105,9 +157,7 @@ export default async function Page() {
 
       <Day heading="26. Januar 2026">
         <DayItem heading="Favicon aktualisiert" badges={["Änderung"]}>
-          <p>
-            Das Favicon zeigt jetzt das SAM-Logo auf schwarzem Hintergrund.
-          </p>
+          <p>Das Favicon zeigt jetzt das SAM-Logo auf schwarzem Hintergrund.</p>
         </DayItem>
       </Day>
 
@@ -199,9 +249,8 @@ export default async function Page() {
         {showGlobalStatistics ? (
           <DayItem heading="Statistiken" badges={["Neu", "Statistiken"]}>
             <p>
-              Es werden nun täglich Statistiken zur Nutzung des SAM erfasst.
-              Zu Beginn werden Schiffsvarianten, Rollen, Logins und Events
-              gezählt.
+              Es werden nun täglich Statistiken zur Nutzung des SAM erfasst. Zu
+              Beginn werden Schiffsvarianten, Rollen, Logins und Events gezählt.
             </p>
 
             <p>
@@ -403,8 +452,8 @@ export default async function Page() {
           <p>
             Einer Rolle kann nun ein optionales Verfallsdatum gegeben werden.
             Dieses Datum wird in Anzahl an Tagen angegeben. Sollte sich ein
-            Citizen mit dieser Rolle innerhalb dieses Datums nicht einmal im
-            SAM angemeldet haben, wird die Rolle automatisch entfernt.
+            Citizen mit dieser Rolle innerhalb dieses Datums nicht einmal im SAM
+            angemeldet haben, wird die Rolle automatisch entfernt.
           </p>
 
           <p>
@@ -1582,9 +1631,9 @@ export default async function Page() {
         <DayItem heading="Abgesagte Events">
           <p>
             Wenn in Discord ein Event abgesagt wird, wird dieses nun auch ins
-            SAM synchronisiert. Hier gibt es nun die Möglichkeit sich vom
-            SAM eine Benachrichtigung zuschicken zu lassen. Hierzu einfach
-            auf die rote Glocke im Dashboard klicken.
+            SAM synchronisiert. Hier gibt es nun die Möglichkeit sich vom SAM
+            eine Benachrichtigung zuschicken zu lassen. Hierzu einfach auf die
+            rote Glocke im Dashboard klicken.
           </p>
         </DayItem>
 
@@ -1815,7 +1864,7 @@ type DayProps = Readonly<{
 
 const Day = ({ heading, children }: DayProps) => {
   return (
-    <article className="bg-neutral-800/50 rounded-primary p-4 lg:p-8 beveled-br">
+    <article className="bg-neutral-800/50 p-4 lg:p-8 corners-primary">
       <h2 className="font-thin text-2xl flex gap-3 items-center font-mono uppercase">
         <FaCalendar className="text-neutral-500 text-base" />
         {heading}
@@ -1872,7 +1921,7 @@ const RedactedDayItem = () => {
         <p>{lorem.generateParagraphs(1)}</p>
       </div>
 
-      <div className="absolute inset-0 flex items-center justify-center backdrop-blur">
+      <div className="absolute inset-0 flex items-center justify-center backdrop-blur-sm">
         <p
           className="text-brand-red-500 font-bold border-2 border-brand-red-500 rounded-secondary px-2 py-1 text-lg relative"
           style={{

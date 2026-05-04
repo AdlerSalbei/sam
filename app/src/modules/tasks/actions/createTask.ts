@@ -1,6 +1,8 @@
 "use server";
 
 import { prisma } from "@/db";
+import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
+import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import { requireAuthenticationAction } from "@/modules/auth/server";
 import { log } from "@/modules/logging";
 import { triggerNotifications } from "@/modules/notifications/utils/triggerNotification";
@@ -12,13 +14,13 @@ import { serializeError } from "serialize-error";
 import { z } from "zod";
 
 const schema = z.object({
-  visibility: z.nativeEnum(TaskVisibility),
+  visibility: z.enum(TaskVisibility),
   assignmentLimit: z.coerce.number().min(1).nullable(),
   assignedToIds: z.array(z.cuid()).max(250).optional(), // Arbitrary (untested) limit to prevent DDoS
   title: z.string().trim().max(64),
   description: z.string().trim().max(2048).optional(),
   expiresAt: z.coerce.date().optional(),
-  rewardType: z.nativeEnum(TaskRewardType),
+  rewardType: z.enum(TaskRewardType),
   rewardTypeTextValue: z.string().trim().max(2048).optional(),
   rewardTypeSilcValue: z.coerce.number().optional(),
   rewardTypeNewSilcValue: z.coerce.number().optional(),
@@ -238,6 +240,18 @@ export const createTask = async (formData: FormData) => {
           requestPayload: formData,
         };
     }
+
+    await createAuditEvents([
+      {
+        type: AuditEventType.TASK_CREATED,
+        data: {
+          taskIds: createdTasks.map((task) => task.id),
+          visibility: result.data.visibility,
+          rewardType: result.data.rewardType,
+        },
+        createdById: authentication.session.user.id,
+      },
+    ]);
 
     /**
      * Trigger notifications

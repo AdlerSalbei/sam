@@ -21,7 +21,7 @@ export const ProfitDistributionCycleExcerptList = async ({
   const profitDistributionCycles = await getProfitDistributionCycles(status);
 
   return (
-    <div className={clsx("flex flex-col gap-[2px]", className)}>
+    <div className={clsx("flex flex-col gap-0.5", className)}>
       {profitDistributionCycles.length > 0 ? (
         profitDistributionCycles.map((cycleData) => (
           <ProfitDistributionCycleExcerpt
@@ -30,7 +30,7 @@ export const ProfitDistributionCycleExcerptList = async ({
           />
         ))
       ) : (
-        <div className="rounded-primary background-secondary p-4 text-center">
+        <div className="rounded-primary bg-secondary p-4 text-center">
           <p>Keine SINcome-Zeiträume gefunden</p>
         </div>
       )}

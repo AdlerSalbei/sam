@@ -39,34 +39,6 @@ export const env = createEnv({
     UNLEASH_SERVER_API_URL: z.url().optional(),
     /** Unleash (or any other Unleash-compatible feature flag provider like GitLab) */
     UNLEASH_SERVER_API_TOKEN: z.string().optional(),
-    BASE_URL: z.preprocess(
-      // Uses VERCEL_URL if BASE_URL is not set, e.g. on Vercel's preview deployments
-      (str) => {
-        if (str) {
-          return str;
-        } else if (process.env.VERCEL_URL) {
-          return `https://${process.env.VERCEL_URL}`;
-        }
-
-        return "http://localhost:3000";
-      },
-      z.string().url(),
-    ),
-    HOST: z.preprocess(
-      // Uses VERCEL_URL if HOST and BASE_URL are not set, e.g. on Vercel's preview deployments
-      (str) => {
-        if (str) {
-          return str;
-        } else if (process.env.BASE_URL) {
-          return process.env.BASE_URL.replace(/https?:\/\//, "");
-        } else if (process.env.VERCEL_URL) {
-          return process.env.VERCEL_URL;
-        }
-
-        return "localhost:3000";
-      },
-      z.string(),
-    ),
     COMMIT_SHA: z.preprocess(
       // Uses VERCEL_GIT_COMMIT_SHA if COMMIT_SHA is not set
       (str) => str || process.env.VERCEL_GIT_COMMIT_SHA,
@@ -78,7 +50,9 @@ export const env = createEnv({
     AWS_SECRET_ACCESS_KEY: z.string().optional(),
     /** AWS_PROFILE=sam-test terraform output event_bus_arn */
     AWS_EVENT_BUS_ARN: z.string().optional(),
+    OPENAI_BASE_URL: z.url().optional(),
     OPENAI_API_KEY: z.string().optional(),
+    OPENAI_EXTRA_API_KEY: z.string().optional(),
     ENABLE_INSTRUMENTATION: z.string().optional(),
     OTEL_EXPORTER_OTLP_PROTOCOL: z.string().optional(),
     OTEL_EXPORTER_OTLP_ENDPOINT: z.string().optional(),
@@ -110,6 +84,35 @@ export const env = createEnv({
     NEXT_PUBLIC_PUSHER_CHANNELS_SECURE_PORT: z.coerce.number().optional(),
     /** npx web-push generate-vapid-keys */
     NEXT_PUBLIC_VAPID_KEY: z.string().optional(),
+    NEXT_PUBLIC_PLAUSIBLE_ENDPOINT: z.url().optional(),
+    NEXT_PUBLIC_HOST: z.preprocess(
+      // Uses VERCEL_URL if HOST and BASE_URL are not set, e.g. on Vercel's preview deployments
+      (str) => {
+        if (str) {
+          return str;
+        } else if (process.env.NEXT_PUBLIC_BASE_URL) {
+          return process.env.NEXT_PUBLIC_BASE_URL.replace(/https?:\/\//, "");
+        } else if (process.env.VERCEL_URL) {
+          return process.env.VERCEL_URL;
+        }
+
+        return "localhost:3000";
+      },
+      z.string(),
+    ),
+    NEXT_PUBLIC_BASE_URL: z.preprocess(
+      // Uses VERCEL_URL if BASE_URL is not set, e.g. on Vercel's preview deployments
+      (str) => {
+        if (str) {
+          return str;
+        } else if (process.env.VERCEL_URL) {
+          return `https://${process.env.VERCEL_URL}`;
+        }
+
+        return "http://localhost:3000";
+      },
+      z.url(),
+    ),
   },
 
   /*
@@ -138,15 +141,17 @@ export const env = createEnv({
     NEXT_PUBLIC_S3_PUBLIC_URL: process.env.NEXT_PUBLIC_S3_PUBLIC_URL,
     UNLEASH_SERVER_API_URL: process.env.UNLEASH_SERVER_API_URL,
     UNLEASH_SERVER_API_TOKEN: process.env.UNLEASH_SERVER_API_TOKEN,
-    HOST: process.env.HOST,
+    NEXT_PUBLIC_HOST: process.env.NEXT_PUBLIC_HOST,
     COMMIT_SHA: process.env.COMMIT_SHA,
     NEXT_PUBLIC_CARE_BEAR_SHOOTER_BUILD_URL:
       process.env.NEXT_PUBLIC_CARE_BEAR_SHOOTER_BUILD_URL,
-    BASE_URL: process.env.BASE_URL,
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
     AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
     AWS_EVENT_BUS_ARN: process.env.AWS_EVENT_BUS_ARN,
+    OPENAI_BASE_URL: process.env.OPENAI_BASE_URL,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    OPENAI_EXTRA_API_KEY: process.env.OPENAI_EXTRA_API_KEY,
     ENABLE_INSTRUMENTATION: process.env.ENABLE_INSTRUMENTATION,
     OTEL_EXPORTER_OTLP_PROTOCOL: process.env.OTEL_EXPORTER_OTLP_PROTOCOL,
     OTEL_EXPORTER_OTLP_ENDPOINT: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
@@ -165,6 +170,7 @@ export const env = createEnv({
     NEXT_PUBLIC_PUSHER_CHANNELS_SECURE_PORT:
       process.env.NEXT_PUBLIC_PUSHER_CHANNELS_SECURE_PORT,
     NEXT_PUBLIC_VAPID_KEY: process.env.NEXT_PUBLIC_VAPID_KEY,
+    NEXT_PUBLIC_PLAUSIBLE_ENDPOINT: process.env.NEXT_PUBLIC_PLAUSIBLE_ENDPOINT,
   },
 
   emptyStringAsUndefined: true,

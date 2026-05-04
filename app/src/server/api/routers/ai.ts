@@ -1,10 +1,10 @@
+import { env } from "@/env";
 import { isOpenAIEnabled } from "@/modules/common/utils/isOpenAIEnabled";
 import { log } from "@/modules/logging";
 import { getRoles } from "@/modules/roles/queries";
 import { TRPCError } from "@trpc/server";
 import OpenAI from "openai";
 import { type ChatCompletionMessageParam } from "openai/resources/index.mjs";
-import { env } from "process";
 import { serializeError } from "serialize-error";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
@@ -20,8 +20,16 @@ export const aiRouter = createTRPCRouter({
     const existingRoles = await getRoles();
     const existingRoleNames = existingRoles.map((role) => role.name);
 
+    const defaultHeaders = new Headers();
+    if (env.OPENAI_EXTRA_API_KEY)
+      defaultHeaders.set("X-Api-Key", env.OPENAI_EXTRA_API_KEY);
+
     const openai = new OpenAI({
+      baseURL: env.OPENAI_BASE_URL,
       apiKey: env.OPENAI_API_KEY,
+      defaultHeaders: {
+        ...Object.fromEntries(defaultHeaders.entries()),
+      },
     });
 
     const messages = [
@@ -35,7 +43,7 @@ export const aiRouter = createTRPCRouter({
 
     const chatCompletion = await openai.chat.completions.create({
       messages,
-      model: "gpt-4o-mini",
+      model: "openai/gpt-5.4-mini",
       max_tokens: 1024,
       response_format: {
         type: "json_object",

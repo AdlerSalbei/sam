@@ -1,5 +1,6 @@
 import { prisma } from "@/db";
 import { requireAuthentication } from "@/modules/auth/server";
+import { CitizenPopover } from "@/modules/citizen/components/CitizenPopover";
 import styles from "@/modules/common/components/ConfirmationGradient.module.css";
 import { Link } from "@/modules/common/components/Link";
 import { formatDate } from "@/modules/common/utils/formatDate";
@@ -126,12 +127,14 @@ export const ActivityTile = async ({ className, id }: Props) => {
             originalEntry: entry,
             message: (
               <p>
-                <Link
-                  href={`/app/spynet/citizen/${entry.citizen.id}`}
-                  className="text-brand-red-500 hover:text-brand-red-300"
-                >
-                  {entry.citizen.handle}
-                </Link>{" "}
+                <CitizenPopover citizenId={entry.citizen.id}>
+                  <Link
+                    href={`/app/spynet/citizen/${entry.citizen.id}`}
+                    className="text-brand-red-500 hover:text-brand-red-300"
+                  >
+                    {entry.citizen.handle}
+                  </Link>
+                </CitizenPopover>{" "}
                 wurde als <em>Main</em> hinzugefügt
               </p>
             ),
@@ -145,12 +148,14 @@ export const ActivityTile = async ({ className, id }: Props) => {
             originalEntry: entry,
             message: (
               <p>
-                <Link
-                  href={`/app/spynet/citizen/${entry.citizen.id}`}
-                  className="text-brand-red-500 hover:text-brand-red-300 mr-1"
-                >
-                  {entry.citizen.handle}
-                </Link>{" "}
+                <CitizenPopover citizenId={entry.citizen.id}>
+                  <Link
+                    href={`/app/spynet/citizen/${entry.citizen.id}`}
+                    className="text-brand-red-500 hover:text-brand-red-300 mr-1"
+                  >
+                    {entry.citizen.handle}
+                  </Link>
+                </CitizenPopover>{" "}
                 wurde als <em>Affiliate</em> hinzugefügt
               </p>
             ),
@@ -164,12 +169,14 @@ export const ActivityTile = async ({ className, id }: Props) => {
             originalEntry: entry,
             message: (
               <p>
-                <Link
-                  href={`/app/spynet/citizen/${entry.citizen.id}`}
-                  className="text-brand-red-500 hover:text-brand-red-300"
-                >
-                  {entry.citizen.handle}
-                </Link>{" "}
+                <CitizenPopover citizenId={entry.citizen.id}>
+                  <Link
+                    href={`/app/spynet/citizen/${entry.citizen.id}`}
+                    className="text-brand-red-500 hover:text-brand-red-300"
+                  >
+                    {entry.citizen.handle}
+                  </Link>
+                </CitizenPopover>{" "}
                 wurde entfernt
               </p>
             ),
@@ -187,9 +194,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
   );
 
   return (
-    <section
-      className={clsx(className, "rounded-primary p-4 background-secondary")}
-    >
+    <section className={clsx(className, "rounded-primary p-4 bg-secondary")}>
       <h2 className="font-bold flex gap-2 items-center">
         <FaListAlt /> Aktivität
       </h2>
@@ -203,7 +208,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
             >
               <div
                 className={clsx({
-                  "absolute w-full h-24 border-t-2 border-x-2 bg-gradient-to-t from-neutral-900/0":
+                  "absolute w-full h-24 border-t-2 border-x-2 bg-linear-to-t from-neutral-900/0":
                     !entry.confirmed ||
                     entry.confirmed === ConfirmationStatus.FALSE_REPORT,
                   [`${styles.blueBorder} to-blue-500/10`]: !entry.confirmed,
@@ -214,7 +219,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
 
               {!entry.confirmed && (
                 <div className="px-4 pt-4 flex gap-2 relative z-10 items-start">
-                  <FaInfoCircle className="text-blue-500 grow-1 shrink-0 mt-[2px]" />
+                  <FaInfoCircle className="text-blue-500 shrink-0 mt-0.5" />
                   <div className="flex gap-2 lg:gap-4 flex-wrap">
                     <p className="font-bold text-sm">Unbestätigt</p>
                     {"originalEntry" in entry && (
@@ -226,7 +231,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
 
               {entry.confirmed === ConfirmationStatus.FALSE_REPORT && (
                 <div className="px-4 pt-4 flex items-start gap-2 relative z-10">
-                  <BsExclamationOctagonFill className="text-red-500 grow-1 shrink-0 mt-1" />
+                  <BsExclamationOctagonFill className="text-red-500 shrink-0 mt-1" />
                   <p className="font-bold">Falschmeldung</p>
                 </div>
               )}
@@ -238,7 +243,7 @@ export const ActivityTile = async ({ className, id }: Props) => {
                     entry.confirmed === ConfirmationStatus.FALSE_REPORT,
                 })}
               >
-                <div className="h-[20px] flex items-center">
+                <div className="h-5 flex items-center">
                   <TbCircleDot />
                 </div>
 

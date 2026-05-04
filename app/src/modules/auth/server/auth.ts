@@ -1,5 +1,7 @@
 import { prisma } from "@/db";
 import { env } from "@/env";
+import { AuditEventType } from "@/modules/audit/utils/AuditEventTypes";
+import { createAuditEvents } from "@/modules/audit/utils/createAuditEvent";
 import type { PermissionSet } from "@/modules/auth/common";
 import { getPermissionSetsByRoles } from "@/modules/auth/server";
 import { getDiscordAvatar } from "@/modules/discord/utils/getDiscordAvatar";
@@ -100,10 +102,7 @@ export const authOptions: NextAuthOptions = {
       }
 
       // Only update lastSeenAt once a day
-      if (
-        !user.lastSeenAt ||
-        user.lastSeenAt.toDateString() !== new Date().toDateString()
-      ) {
+      if (user.lastSeenAt?.toDateString() !== new Date().toDateString()) {
         try {
           await prisma.user.update({
             where: {
@@ -113,6 +112,18 @@ export const authOptions: NextAuthOptions = {
               lastSeenAt: new Date(),
             },
           });
+
+          await createAuditEvents([
+            {
+              type: AuditEventType.USER_FIRST_VISIT_OF_THE_DAY_V2,
+              data: {
+                userId: user.id,
+                userEmail: user.email,
+                userName: user.name,
+              },
+              createdById: user.id,
+            },
+          ]);
         } catch (error) {
           log.warn("Failed to update user's lastSeenAt", {
             userId: user.id,
@@ -309,6 +320,38 @@ export const authOptions: NextAuthOptions = {
   session: {
     maxAge,
     updateAge: maxAge * 2, // Make sure `updateAge` is bigger than `maxAge` so that the session actually expires at some point and then a refreshed authentication with the identity provider is forced
+  },
+
+  events: {
+    signIn: async (message) => {
+      await createAuditEvents([
+        {
+          type: AuditEventType.USER_LOGIN_V2,
+          data: {
+            userId: message.user.id,
+            userEmail: message.user.email,
+            userName: message.user.name,
+          },
+          createdById: message.user.id,
+        },
+      ]);
+    },
+
+    signOut: async (message) => {
+      await createAuditEvents([
+        {
+          type: AuditEventType.USER_LOGOUT,
+          data: {
+            // @ts-expect-error The `id` DOES exist. However, I'm not going to fix the type for any auth related things due to the pending migration off of NextAuth.js
+            sessionId: message.session.id,
+            // @ts-expect-error The `id` DOES exist. However, I'm not going to fix the type for any auth related things due to the pending migration off of NextAuth.js
+            userId: message.session.userId,
+          },
+          // @ts-expect-error The `id` DOES exist. However, I'm not going to fix the type for any auth related things due to the pending migration off of NextAuth.js
+          createdById: message.session.userId,
+        },
+      ]);
+    },
   },
 };
 

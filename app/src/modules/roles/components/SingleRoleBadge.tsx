@@ -17,7 +17,7 @@ import {
 } from "@/modules/common/components/AlertDialog";
 import { Button2, Button2Variant } from "@/modules/common/components/Button2";
 import { Note } from "@/modules/common/components/Note";
-import { Popover } from "@/modules/common/components/Popover";
+import { PopoverBaseUI } from "@/modules/common/components/PopoverBaseUI";
 import { type Role } from "@prisma/client";
 import clsx from "clsx";
 import Image from "next/image";
@@ -30,6 +30,7 @@ interface Props {
   readonly roleId: Role["id"];
   readonly showPlaceholder?: boolean;
   readonly citizenId?: string;
+  readonly onSuccess?: () => void;
 }
 
 export const SingleRoleBadge = ({
@@ -37,10 +38,13 @@ export const SingleRoleBadge = ({
   roleId,
   showPlaceholder = false,
   citizenId,
+  onSuccess,
 }: Props) => {
   const { roles } = useRolesContext();
   const authentication = useAuthentication();
-  const { state, formAction, isPending } = useAction(deleteRoleAssignment);
+  const { state, formAction, isPending } = useAction(deleteRoleAssignment, {
+    onSuccess,
+  });
   const formId = useId();
 
   const role = roles.find((role) => role.id === roleId);
@@ -56,12 +60,11 @@ export const SingleRoleBadge = ({
     ]);
 
   return (
-    <Popover
-      enableHover
+    <PopoverBaseUI
       trigger={
         <span
           className={clsx(
-            "px-2 py-1 rounded-secondary bg-neutral-700/50 inline-flex align-middle gap-2 items-center overflow-hidden",
+            "px-2 h-8 rounded-secondary bg-neutral-700/50 inline-flex align-middle gap-2 items-center overflow-hidden",
             className,
           )}
         >
@@ -86,6 +89,7 @@ export const SingleRoleBadge = ({
           <span className="truncate font-mono text-sm">{role.name}</span>
         </span>
       }
+      childrenClassName="w-[400px]"
     >
       <div>
         <div className="inline-flex align-middle gap-4 items-center">
@@ -107,9 +111,10 @@ export const SingleRoleBadge = ({
             <span className="size-12 border border-neutral-700 rounded-secondary" />
           )}
 
-          <span className="text-lg font-bold font-mono uppercase">
-            {role.name}
-          </span>
+          <div>
+            <p className="opacity-50 font-mono uppercase text-xs">Rolle</p>
+            <p className="text-lg font-bold font-mono uppercase">{role.name}</p>
+          </div>
         </div>
 
         {citizenId && canDismiss && (
@@ -166,6 +171,6 @@ export const SingleRoleBadge = ({
           </div>
         )}
       </div>
-    </Popover>
+    </PopoverBaseUI>
   );
 };

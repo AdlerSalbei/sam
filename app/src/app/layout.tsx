@@ -1,5 +1,4 @@
 import { env } from "@/env";
-import { AnalyticsLoader } from "@/modules/common/components/AnalyticsLoader";
 import ToasterContainer from "@/modules/common/components/ToasterContainer";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import clsx from "clsx";
@@ -15,7 +14,7 @@ const robotMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(env.BASE_URL),
+  metadataBase: new URL(env.NEXT_PUBLIC_BASE_URL),
   title: {
     default: "SAM - Sinister Incorporated",
     template: "%s | SAM - Sinister Incorporated",
@@ -33,7 +32,6 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         {children}
         <NextTopLoader color="#c22424" showSpinner={false} />
         <ToasterContainer />
-        <AnalyticsLoader />
         <SpeedInsights sampleRate={0.5} />
       </body>
     </html>

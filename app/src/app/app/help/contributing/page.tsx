@@ -92,9 +92,9 @@ export default async function Page() {
       />
 
       <div className="flex-1 flex flex-col gap-2">
-        <section className="background-secondary rounded-primary p-4">
+        <section className="bg-secondary rounded-primary p-4">
           <SectionHeading
-            url={`${env.BASE_URL}/app/help/contributing#mithilfe`}
+            url={`${env.NEXT_PUBLIC_BASE_URL}/app/help/contributing#mithilfe`}
             level={1}
             className="mb-4"
           >
@@ -115,9 +115,9 @@ export default async function Page() {
           </RichText>
         </section>
 
-        <section className="background-secondary rounded-primary p-4">
+        <section className="bg-secondary rounded-primary p-4">
           <SectionHeading
-            url={`${env.BASE_URL}/app/help/contributing#arten-der-mithilfe`}
+            url={`${env.NEXT_PUBLIC_BASE_URL}/app/help/contributing#arten-der-mithilfe`}
             className="mb-4"
           >
             Arten der Mithilfe
@@ -126,8 +126,8 @@ export default async function Page() {
           <RichText className="ml-9">
             <p>
               Solltest du einen Fehler entdecken oder hast sonst irgendwelche
-              Probleme mit dem SAM, melde dich einfach bei uns und wir
-              versuchen das Problem schnellstmöglich zu beheben.
+              Probleme mit dem SAM, melde dich einfach bei uns und wir versuchen
+              das Problem schnellstmöglich zu beheben.
             </p>
 
             <p>
@@ -144,19 +144,19 @@ export default async function Page() {
           </RichText>
 
           <ul className="grid grid-cols-2 gap-2 font-bold mt-4 hyphens-auto ml-9">
-            <li className="background-secondary rounded-secondary p-8 flex text-center justify-center items-center">
+            <li className="bg-secondary rounded-secondary p-8 flex text-center justify-center items-center">
               Integrierte Apps
             </li>
 
-            <li className="background-secondary rounded-secondary p-8 flex text-center justify-center items-center">
+            <li className="bg-secondary rounded-secondary p-8 flex text-center justify-center items-center">
               Externe Apps
             </li>
           </ul>
         </section>
 
-        <section className="mt-[2px] background-secondary rounded-primary p-4">
+        <section className="mt-[2px] bg-secondary rounded-primary p-4">
           <SectionHeading
-            url={`${env.BASE_URL}/app/help/contributing#integrierte-apps`}
+            url={`${env.NEXT_PUBLIC_BASE_URL}/app/help/contributing#integrierte-apps`}
             className="mb-4"
           >
             Integrierte Apps
@@ -178,9 +178,9 @@ export default async function Page() {
           </RichText>
         </section>
 
-        <section className="mt-[2px] background-secondary rounded-primary p-4">
+        <section className="mt-[2px] bg-secondary rounded-primary p-4">
           <SectionHeading
-            url={`${env.BASE_URL}/app/help/contributing#externe-apps`}
+            url={`${env.NEXT_PUBLIC_BASE_URL}/app/help/contributing#externe-apps`}
             className="mb-4"
           >
             Externe Apps
@@ -195,9 +195,8 @@ export default async function Page() {
 
             <p>
               Durch diese Separation verlieren sie die Möglichkeit des direkten
-              Zugriffs auf die Funktionen und Inhalte des SAM, haben
-              allerdings freie Flexibilität im Projektmanagement und
-              Entwicklung.
+              Zugriffs auf die Funktionen und Inhalte des SAM, haben allerdings
+              freie Flexibilität im Projektmanagement und Entwicklung.
             </p>
           </RichText>
 
@@ -214,32 +213,32 @@ export default async function Page() {
 
           <RichText className="ml-9 mt-4">
             <p>
-              Damit trotzdem eine teilweise Integration ins SAM und Zugriff
-              auf Funktionen und Daten des SAM möglich ist, bieten wir diesen
+              Damit trotzdem eine teilweise Integration ins SAM und Zugriff auf
+              Funktionen und Daten des SAM möglich ist, bieten wir diesen
               externen Apps folgende Funktionen an:
             </p>
           </RichText>
 
           <ul className="grid grid-cols-2 lg:grid-cols-4 gap-2 font-bold my-4 hyphens-auto ml-9">
-            <li className="background-secondary rounded-secondary p-8 flex text-center justify-center items-center">
+            <li className="bg-secondary rounded-secondary p-8 flex text-center justify-center items-center">
               Iframe-Integration
             </li>
 
-            <li className="background-secondary rounded-secondary p-8 flex text-center justify-center items-center">
+            <li className="bg-secondary rounded-secondary p-8 flex text-center justify-center items-center">
               Benutzerauthentifizierung / Single Sign-on (SSO)
             </li>
 
-            <li className="background-secondary rounded-secondary p-8 flex text-center justify-center items-center">
+            <li className="bg-secondary rounded-secondary p-8 flex text-center justify-center items-center">
               REST-Schnittstellen
             </li>
 
-            <li className="background-secondary rounded-secondary p-8 flex text-center justify-center items-center">
+            <li className="bg-secondary rounded-secondary p-8 flex text-center justify-center items-center">
               Webhooks
             </li>
           </ul>
 
           <SectionHeading
-            url={`${env.BASE_URL}/app/help/contributing#iframe-integration`}
+            url={`${env.NEXT_PUBLIC_BASE_URL}/app/help/contributing#iframe-integration`}
             level={3}
             className="mt-8 mb-4"
           >
@@ -261,14 +260,16 @@ export default async function Page() {
             <ul>
               <li>
                 <strong>Content-Security-Policy:</strong> Die{" "}
-                <code>frame-ancestors</code>-Direktive muss die Domain des
-                SAM enthalten (Beispiel:{" "}
-                <code>frame-ancestors &apos;self&apos; {env.HOST}</code>).
+                <code>frame-ancestors</code>-Direktive muss die Domain des SAM
+                enthalten (Beispiel:{" "}
+                <code>
+                  frame-ancestors &apos;self&apos; {env.NEXT_PUBLIC_HOST}
+                </code>
+                ).
               </li>
               <li>
-                <strong>X-Frame-Options:</strong> Dieser Header muss{" "}
-                entfernt werden. Dieser Header wird durch den CSP-Header
-                überflüssig.
+                <strong>X-Frame-Options:</strong> Dieser Header muss entfernt
+                werden. Dieser Header wird durch den CSP-Header überflüssig.
               </li>
             </ul>
 
@@ -295,7 +296,7 @@ export default async function Page() {
           </RichText>
 
           <SectionHeading
-            url={`${env.BASE_URL}/app/help/contributing#benutzerauthentifizierung-single-sign-on-sso`}
+            url={`${env.NEXT_PUBLIC_BASE_URL}/app/help/contributing#benutzerauthentifizierung-single-sign-on-sso`}
             level={3}
             className="mt-8 mb-4"
           >
@@ -304,16 +305,16 @@ export default async function Page() {
 
           <RichText className="ml-9">
             <p>
-              Das SAM kann für deine externe App die
-              Benutzerauthentifizierung übernehmen. Hierbei übernimmt das SAM
-              die Rolle des Identity Provider. Die Benutzer deiner App melden
-              sich hierbei über SAM an und werden im Anschluss im
-              authentifizierten Zustand zu deiner App weitergeleitet.
+              Das SAM kann für deine externe App die Benutzerauthentifizierung
+              übernehmen. Hierbei übernimmt das SAM die Rolle des Identity
+              Provider. Die Benutzer deiner App melden sich hierbei über SAM an
+              und werden im Anschluss im authentifizierten Zustand zu deiner App
+              weitergeleitet.
             </p>
 
             <p>
-              Als Protokoll wird OAuth2 verwendet. SAM ist der Server und
-              deine App ist der Client.
+              Als Protokoll wird OAuth2 verwendet. SAM ist der Server und deine
+              App ist der Client.
             </p>
 
             <p>
@@ -334,7 +335,7 @@ export default async function Page() {
           </RoadmapNote>
 
           <SectionHeading
-            url={`${env.BASE_URL}/app/help/contributing#rest-schnittstellen`}
+            url={`${env.NEXT_PUBLIC_BASE_URL}/app/help/contributing#rest-schnittstellen`}
             level={3}
             className="mt-8 mb-4"
           >
@@ -363,7 +364,7 @@ export default async function Page() {
           </RoadmapNote>
 
           <SectionHeading
-            url={`${env.BASE_URL}/app/help/contributing#webhooks`}
+            url={`${env.NEXT_PUBLIC_BASE_URL}/app/help/contributing#webhooks`}
             level={3}
             className="mt-8 mb-4"
           >
@@ -385,16 +386,16 @@ export default async function Page() {
           </RoadmapNote>
         </section>
 
-        <section className="mt-[2px] background-secondary rounded-primary p-4">
+        <section className="mt-[2px] bg-secondary rounded-primary p-4">
           <SectionHeading
-            url={`${env.BASE_URL}/app/help/contributing#frequently-asked-questions-faq`}
+            url={`${env.NEXT_PUBLIC_BASE_URL}/app/help/contributing#frequently-asked-questions-faq`}
             className="mb-4"
           >
             Frequently Asked Questions (FAQ)
           </SectionHeading>
 
           <SectionHeading
-            url={`${env.BASE_URL}/app/help/contributing#bei-wem-melde-ich-mich`}
+            url={`${env.NEXT_PUBLIC_BASE_URL}/app/help/contributing#bei-wem-melde-ich-mich`}
             level={3}
             className="mt-8 mb-4"
           >
@@ -410,7 +411,7 @@ export default async function Page() {
           </RichText>
 
           <SectionHeading
-            url={`${env.BASE_URL}/app/help/contributing#wie-starte-ich`}
+            url={`${env.NEXT_PUBLIC_BASE_URL}/app/help/contributing#wie-starte-ich`}
             level={3}
             className="mt-8 mb-4"
           >
@@ -433,7 +434,7 @@ export default async function Page() {
           </RichText>
 
           <SectionHeading
-            url={`${env.BASE_URL}/app/help/contributing#wie-hoste-ich-meine-app`}
+            url={`${env.NEXT_PUBLIC_BASE_URL}/app/help/contributing#wie-hoste-ich-meine-app`}
             level={3}
             className="mt-8 mb-4"
           >
@@ -451,7 +452,7 @@ export default async function Page() {
           </RichText>
 
           <SectionHeading
-            url={`${env.BASE_URL}/app/help/contributing#wann-verfügbar`}
+            url={`${env.NEXT_PUBLIC_BASE_URL}/app/help/contributing#wann-verfügbar`}
             level={3}
             className="mt-8 mb-4"
           >

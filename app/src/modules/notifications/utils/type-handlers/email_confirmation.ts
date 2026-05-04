@@ -30,8 +30,8 @@ export const emailConfirmationHandler = async (payload: Payload) => {
           {
             to: payload.userEmail,
             templateProps: {
-              baseUrl: env.BASE_URL,
-              host: env.HOST,
+              baseUrl: env.NEXT_PUBLIC_BASE_URL,
+              host: env.NEXT_PUBLIC_HOST,
               token: emailConfirmationToken,
             },
           },

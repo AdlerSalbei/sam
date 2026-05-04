@@ -1,11 +1,10 @@
 import { env } from "@/env";
 import { type MetadataRoute } from "next";
 import faviconSrc from "../assets/favicon.svg";
-import screenshotDashboardMobileSrc from "../assets/screenshots/screenshot-dashboard-mobile.png";
-import screenshotDashboardSrc from "../assets/screenshots/screenshot-dashboard.png";
-import screenshotSpynetCitizenMobileSrc from "../assets/screenshots/screenshot-spynet-citizen-mobile.png";
-import screenshotSpynetCitizenSrc from "../assets/screenshots/screenshot-spynet-citizen.png";
-import screenshotSpynetMobileSrc from "../assets/screenshots/screenshot-spynet-mobile.png";
+import screenshotAppsMobileSrc from "../assets/screenshots/screenshot-apps-mobile.avif";
+import screenshotAppsSrc from "../assets/screenshots/screenshot-apps.avif";
+import screenshotDashboardMobileSrc from "../assets/screenshots/screenshot-dashboard-mobile.avif";
+import screenshotDashboardSrc from "../assets/screenshots/screenshot-dashboard.avif";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -14,8 +13,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description:
       "Sinister Administration Module (SAM) for the Star Citizen organization Sinister Incorporated",
     categories: ["entertainment", "games"], // https://github.com/w3c/manifest/wiki/Categories
-    scope: env.BASE_URL, // Will open links outside the app in the browser
-    start_url: `${env.BASE_URL}/app`,
+    scope: env.NEXT_PUBLIC_BASE_URL, // Will open links outside the app in the browser
+    start_url: `${env.NEXT_PUBLIC_BASE_URL}/app`,
     shortcuts: [
       // Can't be individualized based on permissions
       {
@@ -45,32 +44,26 @@ export default function manifest(): MetadataRoute.Manifest {
       {
         form_factor: "wide",
         src: screenshotDashboardSrc.src,
-        sizes: "1280x709",
-        type: "image/png",
-      },
-      {
-        form_factor: "wide",
-        src: screenshotSpynetCitizenSrc.src,
-        sizes: "1280x709",
-        type: "image/png",
-      },
-      {
-        form_factor: "narrow",
-        src: screenshotSpynetCitizenMobileSrc.src,
-        sizes: "577x1280",
-        type: "image/png",
-      },
-      {
-        form_factor: "narrow",
-        src: screenshotSpynetMobileSrc.src,
-        sizes: "577x1280",
-        type: "image/png",
+        sizes: "1280x719",
+        type: "image/avif",
       },
       {
         form_factor: "narrow",
         src: screenshotDashboardMobileSrc.src,
-        sizes: "577x1280",
-        type: "image/png",
+        sizes: "509x1280",
+        type: "image/avif",
+      },
+      {
+        form_factor: "wide",
+        src: screenshotAppsSrc.src,
+        sizes: "1280x1077",
+        type: "image/avif",
+      },
+      {
+        form_factor: "narrow",
+        src: screenshotAppsMobileSrc.src,
+        sizes: "509x1280",
+        type: "image/avif",
       },
     ],
   };

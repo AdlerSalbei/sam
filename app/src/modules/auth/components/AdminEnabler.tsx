@@ -13,9 +13,9 @@ export const AdminEnabler = ({ className, enabled = false }: Props) => {
 
   const handleClick = () => {
     if (enabled) {
-      document.cookie = `enable_admin=; path=/; max-age=0;`;
+      document.cookie = `enable_admin=; path=/; samesite=lax; max-age=0;`;
     } else {
-      document.cookie = `enable_admin=1; path=/; max-age=${60 * 60 * 24 * 7};`;
+      document.cookie = `enable_admin=1; path=/; samesite=lax; max-age=${60 * 60 * 24 * 7};`;
     }
 
     router.refresh();
@@ -24,10 +24,10 @@ export const AdminEnabler = ({ className, enabled = false }: Props) => {
   return (
     <button
       className={clsx(
-        "fixed top-2 left-1/2 -translate-x-1/2 backdrop-blur z-50 max-w-xs px-2 py-1 rounded-secondary gap-4 justify-between transition-colors whitespace-nowrap text-xs font-mono uppercase",
+        "fixed top-2 left-1/2 -translate-x-1/2 backdrop-blur-sm z-50 max-w-xs px-2 py-1 rounded-secondary gap-4 justify-between transition-colors whitespace-nowrap text-xs font-mono uppercase cursor-pointer",
         {
-          "bg-green-500/50 hover:bg-green-500/100": !enabled,
-          "bg-red-500/50 hover:bg-red-500/100": enabled,
+          "bg-green-500/50 hover:bg-green-500": !enabled,
+          "bg-red-500/50 hover:bg-red-500": enabled,
         },
         className,
       )}

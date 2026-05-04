@@ -1,22 +1,22 @@
-name: Notify release
+name: Announce release
 
 on:
   deployment_status:
 
 jobs:
-  notify_soketi:
-    name: Notify Soketi
+  send_event:
+    name: Send event
     if: >-
       github.event.deployment.environment == 'Production' &&
       github.event.deployment_status.state == 'success' &&
-      github.event.deployment.creator.login == 'vercel[bot]' &&
+      github.event.deployment_status.creator.login == 'vercel[bot]' &&
       github.event.deployment_status.environment_url
     runs-on: ubuntu-24.04
     environment: Production
     permissions:
       contents: read
     steps:
-      - name: Send release event
+      - name: Send event
         env:
           HOST: ${{ vars.SOKETI_HOST }}
           APP_ID: ${{ vars.SOKETI_APP_ID }}

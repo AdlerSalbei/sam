@@ -163,7 +163,7 @@ export const getEvents = cache(
   withTrace(
     "getEvents",
     async (
-      status = "open",
+      status: "open" | "closed" | "all" = "open",
       participating: "me" | "all" = "all",
       cursor?: string | null,
       direction: "next" | "prev" = "next",
@@ -182,6 +182,9 @@ export const getEvents = cache(
         where = {
           OR: [{ startTime: { gte: now } }, { endTime: { gte: now } }],
         };
+      } else {
+        // "all" - no additional filtering needed
+        where = {};
       }
 
       if (participating === "me") {
@@ -248,4 +251,17 @@ export const getEvents = cache(
       };
     },
   ),
+);
+
+export const getAllEvents = cache(
+  withTrace("getAllEvents", async () => {
+    const authentication = await requireAuthentication();
+    if (!(await authentication.authorize("event", "read"))) forbidden();
+
+    return prisma.event.findMany({
+      orderBy: {
+        name: "asc",
+      },
+    });
+  }),
 );

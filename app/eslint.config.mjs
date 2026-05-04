@@ -20,6 +20,7 @@ const eslintConfig = defineConfig([
   ...tanstackQuery.configs["flat/recommended"],
   reactYouMightNotNeedAnEffect.configs.recommended,
   prettier,
+  reactCompiler.configs.recommended,
 
   globalIgnores([
     ".next/**",
@@ -39,7 +40,6 @@ const eslintConfig = defineConfig([
     name: "custom-rules",
     plugins: {
       "@typescript-eslint": tseslint.plugin,
-      "react-compiler": reactCompiler,
     },
     languageOptions: {
       parserOptions: {
@@ -89,6 +89,11 @@ const eslintConfig = defineConfig([
         {
           name: "@radix-ui/react-popover",
           message: "Please use @/modules/common/components/Popover instead.",
+        },
+        {
+          name: "@base-ui/react/popover",
+          message:
+            "Please use @/modules/common/components/PopoverBaseUI instead.",
         },
         {
           name: "@radix-ui/react-tooltip",

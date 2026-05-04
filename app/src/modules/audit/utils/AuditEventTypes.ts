@@ -1,0 +1,1480 @@
+export enum AuditEventType {
+  USER_LOGIN = "USER_LOGIN",
+  USER_LOGIN_V2 = "USER_LOGIN_V2",
+  USER_LOGOUT = "USER_LOGOUT",
+  USER_FIRST_VISIT_OF_THE_DAY = "USER_FIRST_VISIT_OF_THE_DAY",
+  USER_FIRST_VISIT_OF_THE_DAY_V2 = "USER_FIRST_VISIT_OF_THE_DAY_V2",
+  SHIP_CREATED = "SHIP_CREATED",
+  SHIP_UPDATED = "SHIP_UPDATED",
+  SHIP_DELETED = "SHIP_DELETED",
+  VARIANT_CREATED = "VARIANT_CREATED",
+  VARIANT_UPDATED = "VARIANT_UPDATED",
+  VARIANT_DELETED = "VARIANT_DELETED",
+  SERIES_UPDATED = "SERIES_UPDATED",
+  SERIES_DELETED = "SERIES_DELETED",
+  MANUFACTURER_UPDATED = "MANUFACTURER_UPDATED",
+  MANUFACTURER_DELETED = "MANUFACTURER_DELETED",
+  WEB_PUSH_SUBSCRIBED = "WEB_PUSH_SUBSCRIBED",
+  ROLE_CREATED = "ROLE_CREATED",
+  ROLE_UPDATED = "ROLE_UPDATED",
+  ROLE_DELETED = "ROLE_DELETED",
+  ROLE_PERMISSIONS_UPDATED = "ROLE_PERMISSIONS_UPDATED",
+  ROLE_PERMISSION_TOGGLED = "ROLE_PERMISSION_TOGGLED",
+  ROLE_INHERITANCE_UPDATED = "ROLE_INHERITANCE_UPDATED",
+  ROLE_ASSIGNMENTS_UPDATED = "ROLE_ASSIGNMENTS_UPDATED",
+  ROLE_ASSIGNMENT_DELETED = "ROLE_ASSIGNMENT_DELETED",
+  SILC_TRANSACTION_CREATED = "SILC_TRANSACTION_CREATED",
+  SILC_TRANSACTION_UPDATED = "SILC_TRANSACTION_UPDATED",
+  SILC_TRANSACTION_DELETED = "SILC_TRANSACTION_DELETED",
+  SALARY_CONFIG_UPDATED = "SALARY_CONFIG_UPDATED",
+  PENALTY_ENTRY_CREATED = "PENALTY_ENTRY_CREATED",
+  PENALTY_ENTRY_DELETED = "PENALTY_ENTRY_DELETED",
+  PROFIT_CYCLE_CREATED = "PROFIT_CYCLE_CREATED",
+  PROFIT_CYCLE_COLLECTION_ENDED = "PROFIT_CYCLE_COLLECTION_ENDED",
+  PROFIT_CYCLE_PAYOUT_STARTED = "PROFIT_CYCLE_PAYOUT_STARTED",
+  PROFIT_CYCLE_PAYOUT_ENDED = "PROFIT_CYCLE_PAYOUT_ENDED",
+  PROFIT_CYCLE_PARTICIPANT_UPDATED = "PROFIT_CYCLE_PARTICIPANT_UPDATED",
+  PROFIT_DISTRIBUTION_MY_ACCEPTED_TOGGLED = "PROFIT_DISTRIBUTION_MY_ACCEPTED_TOGGLED",
+  PROFIT_DISTRIBUTION_MY_CEDED_TOGGLED = "PROFIT_DISTRIBUTION_MY_CEDED_TOGGLED",
+  TASK_CREATED = "TASK_CREATED",
+  TASK_COMPLETED = "TASK_COMPLETED",
+  TASK_DELETED = "TASK_DELETED",
+  TASK_CANCELLED = "TASK_CANCELLED",
+  TASK_ASSIGNMENTS_UPDATED = "TASK_ASSIGNMENTS_UPDATED",
+  TASK_TITLE_UPDATED = "TASK_TITLE_UPDATED",
+  TASK_DESCRIPTION_UPDATED = "TASK_DESCRIPTION_UPDATED",
+  TASK_EXPIRES_AT_UPDATED = "TASK_EXPIRES_AT_UPDATED",
+  TASK_REPEATABLE_UPDATED = "TASK_REPEATABLE_UPDATED",
+  TASK_REQUIRED_ROLES_UPDATED = "TASK_REQUIRED_ROLES_UPDATED",
+  TASK_REWARD_TEXT_UPDATED = "TASK_REWARD_TEXT_UPDATED",
+  TASK_REWARD_SILC_UPDATED = "TASK_REWARD_SILC_UPDATED",
+  TASK_REWARD_NEW_SILC_UPDATED = "TASK_REWARD_NEW_SILC_UPDATED",
+  TASK_SELF_ASSIGNMENT_CREATED = "TASK_SELF_ASSIGNMENT_CREATED",
+  TASK_SELF_ASSIGNMENT_DELETED = "TASK_SELF_ASSIGNMENT_DELETED",
+  EVENT_POSITION_CREATED = "EVENT_POSITION_CREATED",
+  EVENT_POSITION_UPDATED = "EVENT_POSITION_UPDATED",
+  EVENT_POSITION_DELETED = "EVENT_POSITION_DELETED",
+  EVENT_MANAGERS_ASSIGNED = "EVENT_MANAGERS_ASSIGNED",
+  EVENT_MANAGER_REMOVED = "EVENT_MANAGER_REMOVED",
+  EVENT_LINEUP_STATUS_CHANGED = "EVENT_LINEUP_STATUS_CHANGED",
+  EVENT_LINEUP_ORDER_CHANGED = "EVENT_LINEUP_ORDER_CHANGED",
+  EVENT_POSITION_CITIZEN_ASSIGNED = "EVENT_POSITION_CITIZEN_ASSIGNED",
+  EVENT_POSITION_CITIZEN_REMOVED = "EVENT_POSITION_CITIZEN_REMOVED",
+  EVENT_POSITION_NAME_UPDATED = "EVENT_POSITION_NAME_UPDATED",
+  EVENT_POSITION_APPLICATION_CREATED = "EVENT_POSITION_APPLICATION_CREATED",
+  EVENT_POSITION_APPLICATION_DELETED = "EVENT_POSITION_APPLICATION_DELETED",
+  EVENT_LINEUP_COPIED = "EVENT_LINEUP_COPIED",
+  CITIZEN_CREATED = "CITIZEN_CREATED",
+  CITIZEN_DELETED = "CITIZEN_DELETED",
+  ENTITY_LOG_CREATED = "ENTITY_LOG_CREATED",
+  ENTITY_LOG_UPDATED = "ENTITY_LOG_UPDATED",
+  ENTITY_LOG_DELETED = "ENTITY_LOG_DELETED",
+  ORGANIZATION_CREATED = "ORGANIZATION_CREATED",
+  ORGANIZATION_MEMBERSHIP_CREATED = "ORGANIZATION_MEMBERSHIP_CREATED",
+  ORGANIZATION_MEMBERSHIP_REMOVED = "ORGANIZATION_MEMBERSHIP_REMOVED",
+  ORGANIZATION_MEMBERSHIP_CONFIRMED = "ORGANIZATION_MEMBERSHIP_CONFIRMED",
+  CLASSIFICATION_LEVEL_CREATED = "CLASSIFICATION_LEVEL_CREATED",
+  CLASSIFICATION_LEVEL_UPDATED = "CLASSIFICATION_LEVEL_UPDATED",
+  CLASSIFICATION_LEVEL_DELETED = "CLASSIFICATION_LEVEL_DELETED",
+  NOTE_TYPE_CREATED = "NOTE_TYPE_CREATED",
+  NOTE_TYPE_UPDATED = "NOTE_TYPE_UPDATED",
+  NOTE_TYPE_DELETED = "NOTE_TYPE_DELETED",
+  UPLOAD_CREATED = "UPLOAD_CREATED",
+  RESOURCE_IMAGE_ASSIGNED = "RESOURCE_IMAGE_ASSIGNED",
+  EMAIL_VERIFIED = "EMAIL_VERIFIED",
+  EMAIL_CONFIRMATION_REQUESTED = "EMAIL_CONFIRMATION_REQUESTED",
+  EMAIL_VERIFIED_VIA_TOKEN = "EMAIL_VERIFIED_VIA_TOKEN",
+}
+
+export interface AuditEventDataByType {
+  [AuditEventType.USER_LOGIN]: {
+    userId: string;
+  };
+
+  [AuditEventType.USER_LOGIN_V2]: {
+    userId: string;
+    userEmail?: string | null;
+    userName?: string | null;
+  };
+
+  [AuditEventType.USER_LOGOUT]: {
+    sessionId: string;
+    userId: string;
+  };
+
+  [AuditEventType.USER_FIRST_VISIT_OF_THE_DAY]: {
+    userId: string;
+  };
+
+  [AuditEventType.USER_FIRST_VISIT_OF_THE_DAY_V2]: {
+    userId: string;
+    userEmail?: string | null;
+    userName?: string | null;
+  };
+
+  [AuditEventType.SHIP_CREATED]: {
+    shipId: string;
+    ownerId: string;
+    variantId: string;
+  };
+
+  [AuditEventType.SHIP_UPDATED]: {
+    shipId: string;
+    ownerId: string;
+    previousName: string | null;
+    newName: string | null;
+  };
+
+  [AuditEventType.SHIP_DELETED]: {
+    shipId: string;
+    ownerId: string;
+    name: string | null;
+    variantId: string;
+  };
+
+  [AuditEventType.VARIANT_CREATED]: {
+    variantId: string;
+    seriesId: string;
+    name: string;
+    status: string | null;
+  };
+
+  [AuditEventType.VARIANT_UPDATED]: {
+    variantId: string;
+    seriesId: string;
+    previousName: string;
+    newName: string;
+    previousStatus: string | null;
+    newStatus: string | null;
+  };
+
+  [AuditEventType.VARIANT_DELETED]: {
+    variantId: string;
+    seriesId: string;
+    name: string;
+  };
+
+  [AuditEventType.SERIES_UPDATED]: {
+    seriesId: string;
+    manufacturerId: string;
+    previousName: string;
+    newName: string;
+  };
+
+  [AuditEventType.SERIES_DELETED]: {
+    seriesId: string;
+    manufacturerId: string;
+    name: string;
+  };
+
+  [AuditEventType.MANUFACTURER_UPDATED]: {
+    manufacturerId: string;
+    previousName: string;
+    newName: string;
+    previousImageId: string | null;
+    newImageId: string | null;
+  };
+
+  [AuditEventType.MANUFACTURER_DELETED]: {
+    manufacturerId: string;
+    name: string;
+  };
+
+  [AuditEventType.WEB_PUSH_SUBSCRIBED]: {
+    subscriptionId: string;
+    citizenId: string;
+  };
+
+  [AuditEventType.ROLE_CREATED]: {
+    roleId: string;
+    name: string;
+  };
+
+  [AuditEventType.ROLE_UPDATED]: {
+    roleId: string;
+    previousName: string;
+    newName: string;
+    previousMaxAgeDays: number | null;
+    newMaxAgeDays: number | null;
+  };
+
+  [AuditEventType.ROLE_DELETED]: {
+    roleId: string;
+    name: string;
+  };
+
+  [AuditEventType.ROLE_PERMISSIONS_UPDATED]: {
+    roleId: string;
+  };
+
+  [AuditEventType.ROLE_PERMISSION_TOGGLED]: {
+    roleId: string;
+    permissionString: string;
+    enabled: boolean;
+  };
+
+  [AuditEventType.ROLE_INHERITANCE_UPDATED]: {
+    roleId: string;
+  };
+
+  [AuditEventType.ROLE_ASSIGNMENTS_UPDATED]: {
+    citizenId: string;
+    changes: {
+      roleId: string;
+      enabled: boolean;
+    }[];
+  };
+
+  [AuditEventType.ROLE_ASSIGNMENT_DELETED]: {
+    citizenId: string;
+    roleId: string;
+  };
+
+  [AuditEventType.SILC_TRANSACTION_CREATED]: {
+    transactionIds: string[];
+    receiverIds: string[];
+    value: number;
+    description?: string;
+  };
+
+  [AuditEventType.SILC_TRANSACTION_UPDATED]: {
+    transactionId: string;
+    previousValue: number;
+    newValue: number;
+    previousDescription: string | null;
+    newDescription: string | null;
+    receiverId: string;
+  };
+
+  [AuditEventType.SILC_TRANSACTION_DELETED]: {
+    transactionId: string;
+    receiverId: string;
+    value: number;
+    description: string | null;
+  };
+
+  [AuditEventType.SALARY_CONFIG_UPDATED]: {
+    roleIds: string[];
+  };
+
+  [AuditEventType.PENALTY_ENTRY_CREATED]: {
+    penaltyEntryId: string;
+    citizenId: string;
+    points: number;
+    reason: string | null;
+    expiresAt: Date | null;
+  };
+
+  [AuditEventType.PENALTY_ENTRY_DELETED]: {
+    penaltyEntryId: string;
+    citizenId: string;
+    points: number;
+    reason: string | null;
+  };
+
+  [AuditEventType.PROFIT_CYCLE_CREATED]: {
+    cycleId: string;
+    title: string;
+    collectionEndedAt: Date;
+  };
+
+  [AuditEventType.PROFIT_CYCLE_COLLECTION_ENDED]: {
+    cycleId: string;
+  };
+
+  [AuditEventType.PROFIT_CYCLE_PAYOUT_STARTED]: {
+    cycleId: string;
+  };
+
+  [AuditEventType.PROFIT_CYCLE_PAYOUT_ENDED]: {
+    cycleId: string;
+  };
+
+  [AuditEventType.PROFIT_CYCLE_PARTICIPANT_UPDATED]: {
+    cycleId: string;
+    changes: {
+      citizenId: string;
+      attribute: string;
+      enabled: boolean;
+    }[];
+  };
+
+  [AuditEventType.PROFIT_DISTRIBUTION_MY_ACCEPTED_TOGGLED]: {
+    cycleId: string;
+    citizenId: string;
+    value: boolean;
+  };
+
+  [AuditEventType.PROFIT_DISTRIBUTION_MY_CEDED_TOGGLED]: {
+    cycleId: string;
+    citizenId: string;
+    value: boolean;
+  };
+
+  [AuditEventType.TASK_CREATED]: {
+    taskIds: string[];
+    visibility: string;
+    rewardType: string;
+  };
+
+  [AuditEventType.TASK_COMPLETED]: {
+    taskId: string;
+    completionistIds: string[];
+    rewardType: string;
+  };
+
+  [AuditEventType.TASK_DELETED]: {
+    taskId: string;
+    title: string;
+  };
+
+  [AuditEventType.TASK_CANCELLED]: {
+    taskId: string;
+    title: string;
+  };
+
+  [AuditEventType.TASK_ASSIGNMENTS_UPDATED]: {
+    taskId: string;
+  };
+
+  [AuditEventType.TASK_TITLE_UPDATED]: {
+    taskId: string;
+    previousTitle: string;
+    newTitle: string;
+  };
+
+  [AuditEventType.TASK_DESCRIPTION_UPDATED]: {
+    taskId: string;
+    previousDescription: string | null;
+    newDescription: string;
+  };
+
+  [AuditEventType.TASK_EXPIRES_AT_UPDATED]: {
+    taskId: string;
+    previousExpiresAt: Date | null;
+    newExpiresAt: Date | null;
+  };
+
+  [AuditEventType.TASK_REPEATABLE_UPDATED]: {
+    taskId: string;
+    previousRepeatable: number;
+    newRepeatable: number;
+  };
+
+  [AuditEventType.TASK_REQUIRED_ROLES_UPDATED]: {
+    taskId: string;
+  };
+
+  [AuditEventType.TASK_REWARD_TEXT_UPDATED]: {
+    taskId: string;
+    previousValue: string | null;
+    newValue: string;
+  };
+
+  [AuditEventType.TASK_REWARD_SILC_UPDATED]: {
+    taskId: string;
+    previousValue: number | null;
+    newValue: number;
+  };
+
+  [AuditEventType.TASK_REWARD_NEW_SILC_UPDATED]: {
+    taskId: string;
+    previousValue: number | null;
+    newValue: number;
+  };
+
+  [AuditEventType.TASK_SELF_ASSIGNMENT_CREATED]: {
+    taskId: string;
+    citizenId: string;
+  };
+
+  [AuditEventType.TASK_SELF_ASSIGNMENT_DELETED]: {
+    taskId: string;
+    citizenId: string;
+  };
+
+  [AuditEventType.EVENT_POSITION_CREATED]: {
+    eventId: string;
+    positionId: string;
+    name: string;
+    variantIds: string[];
+    parentPositionId?: string;
+  };
+
+  [AuditEventType.EVENT_POSITION_UPDATED]: {
+    eventId: string;
+    positionId: string;
+    previousName: string;
+    newName: string;
+  };
+
+  [AuditEventType.EVENT_POSITION_DELETED]: {
+    eventId: string;
+    positionId: string;
+    name: string;
+  };
+
+  [AuditEventType.EVENT_MANAGERS_ASSIGNED]: {
+    eventId: string;
+    managerIds: string[];
+  };
+
+  [AuditEventType.EVENT_MANAGER_REMOVED]: {
+    eventId: string;
+    managerId: string;
+  };
+
+  [AuditEventType.EVENT_LINEUP_STATUS_CHANGED]: {
+    eventId: string;
+    enabled: boolean;
+  };
+
+  [AuditEventType.EVENT_LINEUP_ORDER_CHANGED]: {
+    eventId: string;
+  };
+
+  [AuditEventType.EVENT_POSITION_CITIZEN_ASSIGNED]: {
+    eventId: string;
+    positionId: string;
+    citizenId: string;
+  };
+
+  [AuditEventType.EVENT_POSITION_CITIZEN_REMOVED]: {
+    eventId: string;
+    positionId: string;
+    previousCitizenId: string;
+  };
+
+  [AuditEventType.EVENT_POSITION_NAME_UPDATED]: {
+    eventId: string;
+    positionId: string;
+    previousName: string;
+    newName: string;
+  };
+
+  [AuditEventType.EVENT_POSITION_APPLICATION_CREATED]: {
+    eventId: string;
+    positionId: string;
+    citizenId: string;
+    applicationId: string;
+  };
+
+  [AuditEventType.EVENT_POSITION_APPLICATION_DELETED]: {
+    eventId: string;
+    positionId: string;
+    citizenId: string;
+    applicationId: string;
+  };
+
+  [AuditEventType.EVENT_LINEUP_COPIED]: {
+    sourceEventId: string;
+    targetEventId: string;
+  };
+
+  [AuditEventType.CITIZEN_CREATED]: {
+    citizenId: string;
+    spectrumId: string;
+  };
+
+  [AuditEventType.CITIZEN_DELETED]: {
+    citizenId: string;
+    spectrumId: string;
+  };
+
+  [AuditEventType.ENTITY_LOG_CREATED]: {
+    entityId: string;
+    logId: string;
+    logType: string;
+  };
+
+  [AuditEventType.ENTITY_LOG_UPDATED]: {
+    entityId: string;
+    logId: string;
+    logType: string;
+  };
+
+  [AuditEventType.ENTITY_LOG_DELETED]: {
+    entityId: string;
+    logId: string;
+    logType: string;
+  };
+
+  [AuditEventType.ORGANIZATION_CREATED]: {
+    organizationId: string;
+    spectrumId: string;
+    name: string;
+  };
+
+  [AuditEventType.ORGANIZATION_MEMBERSHIP_CREATED]: {
+    organizationId: string;
+    citizenId: string;
+    type: string;
+  };
+
+  [AuditEventType.ORGANIZATION_MEMBERSHIP_REMOVED]: {
+    organizationId: string;
+    citizenId: string;
+  };
+
+  [AuditEventType.ORGANIZATION_MEMBERSHIP_CONFIRMED]: {
+    historyEntryId: string;
+    citizenId: string;
+    confirmed: string;
+  };
+
+  [AuditEventType.CLASSIFICATION_LEVEL_CREATED]: {
+    classificationLevelId: string;
+    name: string;
+  };
+
+  [AuditEventType.CLASSIFICATION_LEVEL_UPDATED]: {
+    classificationLevelId: string;
+    previousName: string;
+    newName: string;
+  };
+
+  [AuditEventType.CLASSIFICATION_LEVEL_DELETED]: {
+    classificationLevelId: string;
+    name: string;
+  };
+
+  [AuditEventType.NOTE_TYPE_CREATED]: {
+    noteTypeId: string;
+    name: string;
+  };
+
+  [AuditEventType.NOTE_TYPE_UPDATED]: {
+    noteTypeId: string;
+    previousName: string;
+    newName: string;
+  };
+
+  [AuditEventType.NOTE_TYPE_DELETED]: {
+    noteTypeId: string;
+    name: string;
+  };
+
+  [AuditEventType.UPLOAD_CREATED]: {
+    uploadId: string;
+    fileName: string;
+    mimeType: string;
+  };
+
+  [AuditEventType.RESOURCE_IMAGE_ASSIGNED]: {
+    resourceType: string;
+    resourceId: string;
+    resourceAttribute: string;
+    imageId: string;
+  };
+
+  [AuditEventType.EMAIL_VERIFIED]: {
+    userId: string;
+  };
+
+  [AuditEventType.EMAIL_CONFIRMATION_REQUESTED]: {
+    userId: string;
+    email: string;
+  };
+
+  [AuditEventType.EMAIL_VERIFIED_VIA_TOKEN]: {
+    userId: string;
+  };
+}
+
+interface AuditEventDefinition<Type extends AuditEventType> {
+  type: Type;
+  data: AuditEventDataByType[Type];
+  message: (data: AuditEventDataByType[Type]) => string;
+}
+
+export const AuditEventDefinitions: {
+  [Key in AuditEventType]: AuditEventDefinition<Key>;
+} = {
+  [AuditEventType.USER_LOGIN]: {
+    type: AuditEventType.USER_LOGIN,
+    data: {
+      userId: "string",
+    },
+    message: (data) => `User ${data.userId} logged in`,
+  },
+
+  [AuditEventType.USER_LOGIN_V2]: {
+    type: AuditEventType.USER_LOGIN_V2,
+    data: {
+      userId: "string",
+      userEmail: "string",
+      userName: "string",
+    },
+    message: (data) =>
+      `User ${data.userName ?? data.userId} (${data.userEmail ?? "unknown email"}) logged in`,
+  },
+
+  [AuditEventType.USER_LOGOUT]: {
+    type: AuditEventType.USER_LOGOUT,
+    data: {
+      sessionId: "string",
+      userId: "string",
+    },
+    message: (data) => `User ${data.userId} logged out`,
+  },
+
+  [AuditEventType.USER_FIRST_VISIT_OF_THE_DAY]: {
+    type: AuditEventType.USER_FIRST_VISIT_OF_THE_DAY,
+    data: {
+      userId: "string",
+    },
+    message: (data) => `User ${data.userId} - first visit of the day`,
+  },
+
+  [AuditEventType.USER_FIRST_VISIT_OF_THE_DAY_V2]: {
+    type: AuditEventType.USER_FIRST_VISIT_OF_THE_DAY_V2,
+    data: {
+      userId: "string",
+      userEmail: "string",
+      userName: "string",
+    },
+    message: (data) =>
+      `First visit of the day by user ${data.userName} (${data.userId}, ${data.userEmail})`,
+  },
+
+  [AuditEventType.SHIP_CREATED]: {
+    type: AuditEventType.SHIP_CREATED,
+    data: {
+      shipId: "string",
+      ownerId: "string",
+      variantId: "string",
+    },
+    message: (data) =>
+      `Ship created (owner: ${data.ownerId}, variant: ${data.variantId})`,
+  },
+
+  [AuditEventType.SHIP_UPDATED]: {
+    type: AuditEventType.SHIP_UPDATED,
+    data: {
+      shipId: "string",
+      ownerId: "string",
+      previousName: "string",
+      newName: "string",
+    },
+    message: (data) =>
+      `Ship updated: "${data.previousName}" → "${data.newName}"`,
+  },
+
+  [AuditEventType.SHIP_DELETED]: {
+    type: AuditEventType.SHIP_DELETED,
+    data: {
+      shipId: "string",
+      ownerId: "string",
+      name: "string",
+      variantId: "string",
+    },
+    message: (data) => `Ship deleted: "${data.name}" (owner: ${data.ownerId})`,
+  },
+
+  [AuditEventType.VARIANT_CREATED]: {
+    type: AuditEventType.VARIANT_CREATED,
+    data: {
+      variantId: "string",
+      seriesId: "string",
+      name: "string",
+      status: "FLIGHT_READY",
+    },
+    message: (data) =>
+      `Variant created: "${data.name}" (series: ${data.seriesId})`,
+  },
+
+  [AuditEventType.VARIANT_UPDATED]: {
+    type: AuditEventType.VARIANT_UPDATED,
+    data: {
+      variantId: "string",
+      seriesId: "string",
+      previousName: "string",
+      newName: "string",
+      previousStatus: "FLIGHT_READY",
+      newStatus: "NOT_FLIGHT_READY",
+    },
+    message: (data) =>
+      `Variant updated: "${data.previousName}" → "${data.newName}"`,
+  },
+
+  [AuditEventType.VARIANT_DELETED]: {
+    type: AuditEventType.VARIANT_DELETED,
+    data: {
+      variantId: "string",
+      seriesId: "string",
+      name: "string",
+    },
+    message: (data) =>
+      `Variant deleted: "${data.name}" (series: ${data.seriesId})`,
+  },
+
+  [AuditEventType.SERIES_UPDATED]: {
+    type: AuditEventType.SERIES_UPDATED,
+    data: {
+      seriesId: "string",
+      manufacturerId: "string",
+      previousName: "string",
+      newName: "string",
+    },
+    message: (data) =>
+      `Series updated: "${data.previousName}" → "${data.newName}"`,
+  },
+
+  [AuditEventType.SERIES_DELETED]: {
+    type: AuditEventType.SERIES_DELETED,
+    data: {
+      seriesId: "string",
+      manufacturerId: "string",
+      name: "string",
+    },
+    message: (data) =>
+      `Series deleted: "${data.name}" (manufacturer: ${data.manufacturerId})`,
+  },
+
+  [AuditEventType.MANUFACTURER_UPDATED]: {
+    type: AuditEventType.MANUFACTURER_UPDATED,
+    data: {
+      manufacturerId: "string",
+      previousName: "string",
+      newName: "string",
+      previousImageId: "string",
+      newImageId: "string",
+    },
+    message: (data) =>
+      `Manufacturer updated: "${data.previousName}" → "${data.newName}"`,
+  },
+
+  [AuditEventType.MANUFACTURER_DELETED]: {
+    type: AuditEventType.MANUFACTURER_DELETED,
+    data: {
+      manufacturerId: "string",
+      name: "string",
+    },
+    message: (data) => `Manufacturer deleted: "${data.name}"`,
+  },
+
+  [AuditEventType.WEB_PUSH_SUBSCRIBED]: {
+    type: AuditEventType.WEB_PUSH_SUBSCRIBED,
+    data: {
+      subscriptionId: "string",
+      citizenId: "string",
+    },
+    message: (data) =>
+      `Web push subscription created for citizen ${data.citizenId}`,
+  },
+
+  [AuditEventType.ROLE_CREATED]: {
+    type: AuditEventType.ROLE_CREATED,
+    data: {
+      roleId: "string",
+      name: "string",
+    },
+    message: (data) => `Role created: "${data.name}" (${data.roleId})`,
+  },
+
+  [AuditEventType.ROLE_UPDATED]: {
+    type: AuditEventType.ROLE_UPDATED,
+    data: {
+      roleId: "string",
+      previousName: "string",
+      newName: "string",
+      previousMaxAgeDays: 0,
+      newMaxAgeDays: 0,
+    },
+    message: (data) =>
+      `Role updated: "${data.previousName}" → "${data.newName}"`,
+  },
+
+  [AuditEventType.ROLE_DELETED]: {
+    type: AuditEventType.ROLE_DELETED,
+    data: {
+      roleId: "string",
+      name: "string",
+    },
+    message: (data) => `Role deleted: "${data.name}" (${data.roleId})`,
+  },
+
+  [AuditEventType.ROLE_PERMISSIONS_UPDATED]: {
+    type: AuditEventType.ROLE_PERMISSIONS_UPDATED,
+    data: {
+      roleId: "string",
+    },
+    message: (data) => `Permissions updated for role ${data.roleId}`,
+  },
+
+  [AuditEventType.ROLE_PERMISSION_TOGGLED]: {
+    type: AuditEventType.ROLE_PERMISSION_TOGGLED,
+    data: {
+      roleId: "string",
+      permissionString: "string",
+      enabled: true,
+    },
+    message: (data) =>
+      `Permission "${data.permissionString}" ${data.enabled ? "enabled" : "disabled"} for role ${data.roleId}`,
+  },
+
+  [AuditEventType.ROLE_INHERITANCE_UPDATED]: {
+    type: AuditEventType.ROLE_INHERITANCE_UPDATED,
+    data: {
+      roleId: "string",
+    },
+    message: (data) => `Role inheritance updated for role ${data.roleId}`,
+  },
+
+  [AuditEventType.ROLE_ASSIGNMENTS_UPDATED]: {
+    type: AuditEventType.ROLE_ASSIGNMENTS_UPDATED,
+    data: {
+      citizenId: "string",
+      changes: [
+        {
+          roleId: "string",
+          enabled: true,
+        },
+      ],
+    },
+    message: (data) => `Role assignments updated for citizen ${data.citizenId}`,
+  },
+
+  [AuditEventType.ROLE_ASSIGNMENT_DELETED]: {
+    type: AuditEventType.ROLE_ASSIGNMENT_DELETED,
+    data: {
+      citizenId: "string",
+      roleId: "string",
+    },
+    message: (data) =>
+      `Role assignment deleted for citizen ${data.citizenId} (role: ${data.roleId})`,
+  },
+
+  [AuditEventType.SILC_TRANSACTION_CREATED]: {
+    type: AuditEventType.SILC_TRANSACTION_CREATED,
+    data: {
+      transactionIds: ["string"],
+      receiverIds: ["string"],
+      value: 0,
+      description: "string",
+    },
+    message: (data) => `SILC transaction created: ${data.value} SILC`,
+  },
+
+  [AuditEventType.SILC_TRANSACTION_UPDATED]: {
+    type: AuditEventType.SILC_TRANSACTION_UPDATED,
+    data: {
+      transactionId: "string",
+      previousValue: 0,
+      newValue: 0,
+      previousDescription: "string",
+      newDescription: "string",
+      receiverId: "string",
+    },
+    message: (data) =>
+      `SILC transaction updated: ${data.previousValue} → ${data.newValue} SILC`,
+  },
+
+  [AuditEventType.SILC_TRANSACTION_DELETED]: {
+    type: AuditEventType.SILC_TRANSACTION_DELETED,
+    data: {
+      transactionId: "string",
+      receiverId: "string",
+      value: 0,
+      description: "string",
+    },
+    message: (data) => `SILC transaction deleted (${data.transactionId})`,
+  },
+
+  [AuditEventType.SALARY_CONFIG_UPDATED]: {
+    type: AuditEventType.SALARY_CONFIG_UPDATED,
+    data: {
+      roleIds: ["string"],
+    },
+    message: () => `Salary config updated`,
+  },
+
+  [AuditEventType.PENALTY_ENTRY_CREATED]: {
+    type: AuditEventType.PENALTY_ENTRY_CREATED,
+    data: {
+      penaltyEntryId: "string",
+      citizenId: "string",
+      points: 0,
+      reason: "string",
+      expiresAt: new Date(),
+    },
+    message: (data) =>
+      `Penalty entry created for citizen ${data.citizenId} (${data.points} points)`,
+  },
+
+  [AuditEventType.PENALTY_ENTRY_DELETED]: {
+    type: AuditEventType.PENALTY_ENTRY_DELETED,
+    data: {
+      penaltyEntryId: "string",
+      citizenId: "string",
+      points: 0,
+      reason: "string",
+    },
+    message: (data) =>
+      `Penalty entry deleted for citizen ${data.citizenId} (${data.points} points)`,
+  },
+
+  [AuditEventType.PROFIT_CYCLE_CREATED]: {
+    type: AuditEventType.PROFIT_CYCLE_CREATED,
+    data: {
+      cycleId: "string",
+      title: "string",
+      collectionEndedAt: new Date(),
+    },
+    message: (data) =>
+      `Profit distribution cycle created: "${data.title}" (${data.cycleId})`,
+  },
+
+  [AuditEventType.PROFIT_CYCLE_COLLECTION_ENDED]: {
+    type: AuditEventType.PROFIT_CYCLE_COLLECTION_ENDED,
+    data: {
+      cycleId: "string",
+    },
+    message: (data) =>
+      `Profit distribution cycle collection ended (${data.cycleId})`,
+  },
+
+  [AuditEventType.PROFIT_CYCLE_PAYOUT_STARTED]: {
+    type: AuditEventType.PROFIT_CYCLE_PAYOUT_STARTED,
+    data: {
+      cycleId: "string",
+    },
+    message: (data) =>
+      `Profit distribution cycle payout started (${data.cycleId})`,
+  },
+
+  [AuditEventType.PROFIT_CYCLE_PAYOUT_ENDED]: {
+    type: AuditEventType.PROFIT_CYCLE_PAYOUT_ENDED,
+    data: {
+      cycleId: "string",
+    },
+    message: (data) =>
+      `Profit distribution cycle payout ended (${data.cycleId})`,
+  },
+
+  [AuditEventType.PROFIT_CYCLE_PARTICIPANT_UPDATED]: {
+    type: AuditEventType.PROFIT_CYCLE_PARTICIPANT_UPDATED,
+    data: {
+      cycleId: "string",
+      changes: [
+        {
+          citizenId: "string",
+          attribute: "string",
+          enabled: true,
+        },
+      ],
+    },
+    message: (data) =>
+      `Profit cycle participant updated (cycle: ${data.cycleId})`,
+  },
+
+  [AuditEventType.PROFIT_DISTRIBUTION_MY_ACCEPTED_TOGGLED]: {
+    type: AuditEventType.PROFIT_DISTRIBUTION_MY_ACCEPTED_TOGGLED,
+    data: {
+      cycleId: "string",
+      citizenId: "string",
+      value: true,
+    },
+    message: (data) =>
+      `Profit distribution accepted toggled to ${data.value} (cycle: ${data.cycleId})`,
+  },
+
+  [AuditEventType.PROFIT_DISTRIBUTION_MY_CEDED_TOGGLED]: {
+    type: AuditEventType.PROFIT_DISTRIBUTION_MY_CEDED_TOGGLED,
+    data: {
+      cycleId: "string",
+      citizenId: "string",
+      value: true,
+    },
+    message: (data) =>
+      `Profit distribution ceded toggled to ${data.value} (cycle: ${data.cycleId})`,
+  },
+
+  [AuditEventType.TASK_CREATED]: {
+    type: AuditEventType.TASK_CREATED,
+    data: {
+      taskIds: ["string"],
+      visibility: "PUBLIC",
+      rewardType: "TEXT",
+    },
+    message: () => `Task(s) created`,
+  },
+
+  [AuditEventType.TASK_COMPLETED]: {
+    type: AuditEventType.TASK_COMPLETED,
+    data: {
+      taskId: "string",
+      completionistIds: ["string"],
+      rewardType: "TEXT",
+    },
+    message: (data) => `Task completed (${data.taskId})`,
+  },
+
+  [AuditEventType.TASK_DELETED]: {
+    type: AuditEventType.TASK_DELETED,
+    data: {
+      taskId: "string",
+      title: "string",
+    },
+    message: (data) => `Task deleted: "${data.title}" (${data.taskId})`,
+  },
+
+  [AuditEventType.TASK_CANCELLED]: {
+    type: AuditEventType.TASK_CANCELLED,
+    data: {
+      taskId: "string",
+      title: "string",
+    },
+    message: (data) => `Task cancelled: "${data.title}" (${data.taskId})`,
+  },
+
+  [AuditEventType.TASK_ASSIGNMENTS_UPDATED]: {
+    type: AuditEventType.TASK_ASSIGNMENTS_UPDATED,
+    data: {
+      taskId: "string",
+    },
+    message: (data) => `Task assignments updated (${data.taskId})`,
+  },
+
+  [AuditEventType.TASK_TITLE_UPDATED]: {
+    type: AuditEventType.TASK_TITLE_UPDATED,
+    data: {
+      taskId: "string",
+      previousTitle: "Old title",
+      newTitle: "New title",
+    },
+    message: (data) =>
+      `Task title updated: "${data.previousTitle}" → "${data.newTitle}"`,
+  },
+
+  [AuditEventType.TASK_DESCRIPTION_UPDATED]: {
+    type: AuditEventType.TASK_DESCRIPTION_UPDATED,
+    data: {
+      taskId: "string",
+      previousDescription: "Old description",
+      newDescription: "New description",
+    },
+    message: (data) => `Task description updated (${data.taskId})`,
+  },
+
+  [AuditEventType.TASK_EXPIRES_AT_UPDATED]: {
+    type: AuditEventType.TASK_EXPIRES_AT_UPDATED,
+    data: {
+      taskId: "string",
+      previousExpiresAt: null,
+      newExpiresAt: new Date(),
+    },
+    message: (data) => `Task expiry updated (${data.taskId})`,
+  },
+
+  [AuditEventType.TASK_REPEATABLE_UPDATED]: {
+    type: AuditEventType.TASK_REPEATABLE_UPDATED,
+    data: {
+      taskId: "string",
+      previousRepeatable: 1,
+      newRepeatable: 2,
+    },
+    message: (data) => `Task repeatable updated (${data.taskId})`,
+  },
+
+  [AuditEventType.TASK_REQUIRED_ROLES_UPDATED]: {
+    type: AuditEventType.TASK_REQUIRED_ROLES_UPDATED,
+    data: {
+      taskId: "string",
+    },
+    message: (data) => `Task required roles updated (${data.taskId})`,
+  },
+
+  [AuditEventType.TASK_REWARD_TEXT_UPDATED]: {
+    type: AuditEventType.TASK_REWARD_TEXT_UPDATED,
+    data: {
+      taskId: "string",
+      previousValue: "Old reward",
+      newValue: "New reward",
+    },
+    message: (data) => `Task reward text updated (${data.taskId})`,
+  },
+
+  [AuditEventType.TASK_REWARD_SILC_UPDATED]: {
+    type: AuditEventType.TASK_REWARD_SILC_UPDATED,
+    data: {
+      taskId: "string",
+      previousValue: 10,
+      newValue: 20,
+    },
+    message: (data) => `Task SILC reward updated (${data.taskId})`,
+  },
+
+  [AuditEventType.TASK_REWARD_NEW_SILC_UPDATED]: {
+    type: AuditEventType.TASK_REWARD_NEW_SILC_UPDATED,
+    data: {
+      taskId: "string",
+      previousValue: 100,
+      newValue: 200,
+    },
+    message: (data) => `Task new SILC reward updated (${data.taskId})`,
+  },
+
+  [AuditEventType.TASK_SELF_ASSIGNMENT_CREATED]: {
+    type: AuditEventType.TASK_SELF_ASSIGNMENT_CREATED,
+    data: {
+      taskId: "string",
+      citizenId: "string",
+    },
+    message: (data) =>
+      `Task self-assignment created (task: ${data.taskId}, citizen: ${data.citizenId})`,
+  },
+
+  [AuditEventType.TASK_SELF_ASSIGNMENT_DELETED]: {
+    type: AuditEventType.TASK_SELF_ASSIGNMENT_DELETED,
+    data: {
+      taskId: "string",
+      citizenId: "string",
+    },
+    message: (data) =>
+      `Task self-assignment deleted (task: ${data.taskId}, citizen: ${data.citizenId})`,
+  },
+
+  [AuditEventType.EVENT_POSITION_CREATED]: {
+    type: AuditEventType.EVENT_POSITION_CREATED,
+    data: {
+      eventId: "string",
+      positionId: "string",
+      name: "string",
+      variantIds: ["string"],
+      parentPositionId: "string",
+    },
+    message: (data) =>
+      `Event position "${data.name}" created (event: ${data.eventId})`,
+  },
+
+  [AuditEventType.EVENT_POSITION_UPDATED]: {
+    type: AuditEventType.EVENT_POSITION_UPDATED,
+    data: {
+      eventId: "string",
+      positionId: "string",
+      previousName: "string",
+      newName: "string",
+    },
+    message: (data) =>
+      `Event position updated (event: ${data.eventId}, position: ${data.positionId})`,
+  },
+
+  [AuditEventType.EVENT_POSITION_DELETED]: {
+    type: AuditEventType.EVENT_POSITION_DELETED,
+    data: {
+      eventId: "string",
+      positionId: "string",
+      name: "string",
+    },
+    message: (data) =>
+      `Event position deleted (event: ${data.eventId}, position: ${data.positionId})`,
+  },
+
+  [AuditEventType.EVENT_MANAGERS_ASSIGNED]: {
+    type: AuditEventType.EVENT_MANAGERS_ASSIGNED,
+    data: {
+      eventId: "string",
+      managerIds: ["string"],
+    },
+    message: (data) => `Event managers assigned (event: ${data.eventId})`,
+  },
+
+  [AuditEventType.EVENT_MANAGER_REMOVED]: {
+    type: AuditEventType.EVENT_MANAGER_REMOVED,
+    data: {
+      eventId: "string",
+      managerId: "string",
+    },
+    message: (data) =>
+      `Event manager removed (event: ${data.eventId}, manager: ${data.managerId})`,
+  },
+
+  [AuditEventType.EVENT_LINEUP_STATUS_CHANGED]: {
+    type: AuditEventType.EVENT_LINEUP_STATUS_CHANGED,
+    data: {
+      eventId: "string",
+      enabled: true,
+    },
+    message: (data) =>
+      `Event lineup ${data.enabled ? "enabled" : "disabled"} (event: ${data.eventId})`,
+  },
+
+  [AuditEventType.EVENT_LINEUP_ORDER_CHANGED]: {
+    type: AuditEventType.EVENT_LINEUP_ORDER_CHANGED,
+    data: {
+      eventId: "string",
+    },
+    message: (data) => `Event lineup order changed (event: ${data.eventId})`,
+  },
+
+  [AuditEventType.EVENT_POSITION_CITIZEN_ASSIGNED]: {
+    type: AuditEventType.EVENT_POSITION_CITIZEN_ASSIGNED,
+    data: {
+      eventId: "string",
+      positionId: "string",
+      citizenId: "string",
+    },
+    message: (data) =>
+      `Citizen assigned to event position (event: ${data.eventId}, citizen: ${data.citizenId})`,
+  },
+
+  [AuditEventType.EVENT_POSITION_CITIZEN_REMOVED]: {
+    type: AuditEventType.EVENT_POSITION_CITIZEN_REMOVED,
+    data: {
+      eventId: "string",
+      positionId: "string",
+      previousCitizenId: "string",
+    },
+    message: (data) =>
+      `Citizen removed from event position (event: ${data.eventId}, previousCitizen: ${data.previousCitizenId})`,
+  },
+
+  [AuditEventType.EVENT_POSITION_NAME_UPDATED]: {
+    type: AuditEventType.EVENT_POSITION_NAME_UPDATED,
+    data: {
+      eventId: "string",
+      positionId: "string",
+      previousName: "string",
+      newName: "string",
+    },
+    message: (data) =>
+      `Event position name updated: "${data.previousName}" → "${data.newName}"`,
+  },
+
+  [AuditEventType.EVENT_POSITION_APPLICATION_CREATED]: {
+    type: AuditEventType.EVENT_POSITION_APPLICATION_CREATED,
+    data: {
+      eventId: "string",
+      positionId: "string",
+      citizenId: "string",
+      applicationId: "string",
+    },
+    message: (data) =>
+      `Application created for event position (event: ${data.eventId}, citizen: ${data.citizenId})`,
+  },
+
+  [AuditEventType.EVENT_POSITION_APPLICATION_DELETED]: {
+    type: AuditEventType.EVENT_POSITION_APPLICATION_DELETED,
+    data: {
+      eventId: "string",
+      positionId: "string",
+      citizenId: "string",
+      applicationId: "string",
+    },
+    message: (data) =>
+      `Application deleted for event position (event: ${data.eventId}, citizen: ${data.citizenId})`,
+  },
+
+  [AuditEventType.EVENT_LINEUP_COPIED]: {
+    type: AuditEventType.EVENT_LINEUP_COPIED,
+    data: {
+      sourceEventId: "string",
+      targetEventId: "string",
+    },
+    message: (data) =>
+      `Event lineup copied from ${data.sourceEventId} to ${data.targetEventId}`,
+  },
+
+  [AuditEventType.CITIZEN_CREATED]: {
+    type: AuditEventType.CITIZEN_CREATED,
+    data: {
+      citizenId: "string",
+      spectrumId: "string",
+    },
+    message: (data) =>
+      `Citizen created: ${data.spectrumId} (${data.citizenId})`,
+  },
+
+  [AuditEventType.CITIZEN_DELETED]: {
+    type: AuditEventType.CITIZEN_DELETED,
+    data: {
+      citizenId: "string",
+      spectrumId: "string",
+    },
+    message: (data) =>
+      `Citizen deleted: ${data.spectrumId} (${data.citizenId})`,
+  },
+
+  [AuditEventType.ENTITY_LOG_CREATED]: {
+    type: AuditEventType.ENTITY_LOG_CREATED,
+    data: {
+      entityId: "string",
+      logId: "string",
+      logType: "string",
+    },
+    message: (data) =>
+      `Entity log created (entity: ${data.entityId}, type: ${data.logType})`,
+  },
+
+  [AuditEventType.ENTITY_LOG_UPDATED]: {
+    type: AuditEventType.ENTITY_LOG_UPDATED,
+    data: {
+      entityId: "string",
+      logId: "string",
+      logType: "string",
+    },
+    message: (data) =>
+      `Entity log updated (entity: ${data.entityId}, log: ${data.logId})`,
+  },
+
+  [AuditEventType.ENTITY_LOG_DELETED]: {
+    type: AuditEventType.ENTITY_LOG_DELETED,
+    data: {
+      entityId: "string",
+      logId: "string",
+      logType: "string",
+    },
+    message: (data) =>
+      `Entity log deleted (entity: ${data.entityId}, log: ${data.logId})`,
+  },
+
+  [AuditEventType.ORGANIZATION_CREATED]: {
+    type: AuditEventType.ORGANIZATION_CREATED,
+    data: {
+      organizationId: "string",
+      spectrumId: "string",
+      name: "string",
+    },
+    message: (data) =>
+      `Organization created: "${data.name}" (${data.spectrumId})`,
+  },
+
+  [AuditEventType.ORGANIZATION_MEMBERSHIP_CREATED]: {
+    type: AuditEventType.ORGANIZATION_MEMBERSHIP_CREATED,
+    data: {
+      organizationId: "string",
+      citizenId: "string",
+      type: "MAIN",
+    },
+    message: (data) =>
+      `Organization membership created (org: ${data.organizationId}, citizen: ${data.citizenId})`,
+  },
+
+  [AuditEventType.ORGANIZATION_MEMBERSHIP_REMOVED]: {
+    type: AuditEventType.ORGANIZATION_MEMBERSHIP_REMOVED,
+    data: {
+      organizationId: "string",
+      citizenId: "string",
+    },
+    message: (data) =>
+      `Organization membership removed (org: ${data.organizationId}, citizen: ${data.citizenId})`,
+  },
+
+  [AuditEventType.ORGANIZATION_MEMBERSHIP_CONFIRMED]: {
+    type: AuditEventType.ORGANIZATION_MEMBERSHIP_CONFIRMED,
+    data: {
+      historyEntryId: "string",
+      citizenId: "string",
+      confirmed: "CONFIRMED",
+    },
+    message: (data) =>
+      `Organization membership confirmation updated (citizen: ${data.citizenId})`,
+  },
+
+  [AuditEventType.CLASSIFICATION_LEVEL_CREATED]: {
+    type: AuditEventType.CLASSIFICATION_LEVEL_CREATED,
+    data: {
+      classificationLevelId: "string",
+      name: "string",
+    },
+    message: (data) => `Classification level created: "${data.name}"`,
+  },
+
+  [AuditEventType.CLASSIFICATION_LEVEL_UPDATED]: {
+    type: AuditEventType.CLASSIFICATION_LEVEL_UPDATED,
+    data: {
+      classificationLevelId: "string",
+      previousName: "string",
+      newName: "string",
+    },
+    message: (data) =>
+      `Classification level updated: "${data.previousName}" → "${data.newName}"`,
+  },
+
+  [AuditEventType.CLASSIFICATION_LEVEL_DELETED]: {
+    type: AuditEventType.CLASSIFICATION_LEVEL_DELETED,
+    data: {
+      classificationLevelId: "string",
+      name: "string",
+    },
+    message: (data) => `Classification level deleted: "${data.name}"`,
+  },
+
+  [AuditEventType.NOTE_TYPE_CREATED]: {
+    type: AuditEventType.NOTE_TYPE_CREATED,
+    data: {
+      noteTypeId: "string",
+      name: "string",
+    },
+    message: (data) => `Note type created: "${data.name}"`,
+  },
+
+  [AuditEventType.NOTE_TYPE_UPDATED]: {
+    type: AuditEventType.NOTE_TYPE_UPDATED,
+    data: {
+      noteTypeId: "string",
+      previousName: "string",
+      newName: "string",
+    },
+    message: (data) =>
+      `Note type updated: "${data.previousName}" → "${data.newName}"`,
+  },
+
+  [AuditEventType.NOTE_TYPE_DELETED]: {
+    type: AuditEventType.NOTE_TYPE_DELETED,
+    data: {
+      noteTypeId: "string",
+      name: "string",
+    },
+    message: (data) => `Note type deleted: "${data.name}"`,
+  },
+
+  [AuditEventType.UPLOAD_CREATED]: {
+    type: AuditEventType.UPLOAD_CREATED,
+    data: {
+      uploadId: "string",
+      fileName: "file.png",
+      mimeType: "image/png",
+    },
+    message: (data) => `File uploaded: "${data.fileName}" (${data.mimeType})`,
+  },
+
+  [AuditEventType.RESOURCE_IMAGE_ASSIGNED]: {
+    type: AuditEventType.RESOURCE_IMAGE_ASSIGNED,
+    data: {
+      resourceType: "manufacturer",
+      resourceId: "string",
+      resourceAttribute: "imageId",
+      imageId: "string",
+    },
+    message: (data) =>
+      `Image assigned to ${data.resourceType} ${data.resourceId}`,
+  },
+
+  [AuditEventType.EMAIL_VERIFIED]: {
+    type: AuditEventType.EMAIL_VERIFIED,
+    data: {
+      userId: "string",
+    },
+    message: (data) => `Email verified for user ${data.userId}`,
+  },
+
+  [AuditEventType.EMAIL_CONFIRMATION_REQUESTED]: {
+    type: AuditEventType.EMAIL_CONFIRMATION_REQUESTED,
+    data: {
+      userId: "string",
+      email: "user@example.com",
+    },
+    message: (data) =>
+      `Email confirmation requested for user ${data.userId} (${data.email})`,
+  },
+
+  [AuditEventType.EMAIL_VERIFIED_VIA_TOKEN]: {
+    type: AuditEventType.EMAIL_VERIFIED_VIA_TOKEN,
+    data: {
+      userId: "string",
+    },
+    message: (data) => `Email verified via token for user ${data.userId}`,
+  },
+};

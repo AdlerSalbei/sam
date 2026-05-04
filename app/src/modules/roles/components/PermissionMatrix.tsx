@@ -513,6 +513,11 @@ export const STATIC_PERMISSIONS = [
     title: "Globale Statistiken lesen",
     string: "globalStatistics;read",
   },
+  {
+    section: "Sonstiges",
+    title: "System Log lesen",
+    string: "systemLog;read",
+  },
 ];
 
 interface Props {
@@ -543,7 +548,7 @@ export const PermissionMatrix = async ({ className }: Props) => {
   return (
     <section
       className={clsx(
-        "p-4 lg:p-6 rounded-primary background-secondary overflow-x-scroll",
+        "p-4 lg:p-6 rounded-primary bg-secondary overflow-x-scroll",
         className,
       )}
     >
@@ -615,7 +620,7 @@ const Row = ({ role, permissions, gridTemplateColumns }: RowProps) => {
         gridTemplateColumns,
       }}
     >
-      <td className="h-8 overflow-hidden sticky -left-2 z-10 background-secondary rounded-secondary">
+      <td className="h-8 overflow-hidden sticky -left-2 z-10 bg-secondary rounded-secondary">
         <Link
           href={`/app/roles/${role.id}`}
           className="flex items-center gap-2 hover:bg-neutral-800 px-2 rounded-secondary h-full"

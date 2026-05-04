@@ -16,15 +16,11 @@
         "digest"
       ],
       "automerge": true,
-      "minimumReleaseAge": "7 days",
-      "minimumReleaseAgeBehaviour": "timestamp-optional",
-      "internalChecksFilter": "strict",
       "schedule": [
         "before 7am on Tuesday"
       ],
       "matchPackageNames": [
         "*",
-        "!postgres",
         "!eslint-plugin-react-compiler",
         "!@biomejs/biome",
         "!prisma",
@@ -40,6 +36,8 @@
     }
   ],
   "osvVulnerabilityAlerts": true,
+  "dependencyDashboardOSVVulnerabilitySummary": "all",
+  "dependencyDashboardReportAbandonment": true,
   "configMigration": true,
   "prHourlyLimit": 10,
   "prConcurrentLimit": 5,
@@ -48,5 +46,15 @@
   "automergeStrategy": "squash",
   "ignorePaths": [
     "bun-packages/**"
-  ]
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": [
+      "before 7am on Wednesday"
+    ]
+  },
+  "pinDigests": true,
+  "minimumReleaseAge": "7 days",
+  "minimumReleaseAgeBehaviour": "timestamp-optional",
+  "internalChecksFilter": "strict"
 }
