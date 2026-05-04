@@ -2,7 +2,7 @@ import { authenticate } from "@/modules/auth/server";
 import { transformPermissionStringToPermissionSet } from "@/modules/auth/transformPermissionStringToPermissionSet";
 import { withTrace } from "@/modules/tracing/utils/withTrace";
 import { cache } from "react";
-import { externalApps } from "./externalApps";
+import { prisma } from "@/db";
 import { INTEGRATED_APPS } from "./INTEGRATED_APPS";
 import type { App, RedactedApp } from "./types";
 
@@ -15,18 +15,17 @@ export const getAppLinks = cache(
     const authentication = await authenticate();
     if (!authentication) return null;
 
-    // TODO: Implement fetching apps from database
+    // Externe Apps aus der Datenbank laden
+    const dbExternalApps = await prisma.externalApps.findMany();
 
     const apps: App[] = await Promise.all([
       ...INTEGRATED_APPS.map(async (app) => {
         let redacted = false;
-
         if (app.permissionStrings && app.permissionStrings.length > 0) {
           const permissions = await Promise.all(
             app.permissionStrings.map(async (permissionString) => {
               const permissionSet =
                 transformPermissionStringToPermissionSet(permissionString);
-
               return authentication.authorize(
                 permissionSet.resource,
                 permissionSet.operation,
@@ -34,11 +33,9 @@ export const getAppLinks = cache(
               );
             }),
           );
-
           if (!permissions.some((permission) => permission === true))
             redacted = true;
         }
-
         if (redacted) {
           return {
             name: app.name,
@@ -46,15 +43,12 @@ export const getAppLinks = cache(
             redacted: true,
           } satisfies RedactedApp;
         }
-
         return {
           ...app,
         };
       }),
-
-      // TODO: Implement permission check
-      // eslint-disable-next-line @typescript-eslint/await-thenable
-      ...externalApps.map((externalApp) => {
+      // Externe Apps aus DB mappen (kein Permission-Check nötig laut TODO)
+      ...dbExternalApps.map((externalApp) => {
         return {
           ...externalApp,
         };
@@ -70,11 +64,12 @@ export const getExternalAppBySlug = cache(
     const authentication = await authenticate();
     if (!authentication) return null;
 
-    // TODO: Implement fetching apps from database
+    // App aus der Datenbank per Slug laden
+    const app = await prisma.externalApps.findUnique({
+      where: { slug },
+    });
 
-    const app = externalApps.find((app) => app.slug === slug);
     if (!app) return null;
-
     return app;
   }),
 );
