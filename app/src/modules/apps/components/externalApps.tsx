@@ -7,6 +7,7 @@ import * as FaIcons from "react-icons/fa";
 import { FaTrash, FaPen } from "react-icons/fa";
 import Image from "next/image";
 import { registerExternalApp } from "@/modules/apps/actions/registerExternalApp";
+import { deleteExternalApp } from "@/modules/apps/actions/deleteExternalApp";
 import { useRouter } from "next/navigation";
 
 const ICON_LIST = Object.keys(FaIcons).filter((key) => key.startsWith("Fa"));
@@ -86,7 +87,6 @@ export const ExternalApps = ({ existingApps }: Props) => {
 
     const formData = new FormData();
 
-    // Nur anhängen wenn eine ID vorhanden ist
     const resolvedId = editId ?? duplicate?.id;
     if (resolvedId) formData.append("id", resolvedId);
 
@@ -107,10 +107,15 @@ export const ExternalApps = ({ existingApps }: Props) => {
   const handleDelete = async () => {
     if (!deleteId) return;
     setDeleteLoading(true);
-    await fetch(`/api/apps/${deleteId}`, { method: "DELETE" });
-    setDeleteLoading(false);
-    setDeleteId(null);
-    router.refresh();
+    try {
+      await deleteExternalApp(deleteId);
+      setDeleteId(null);
+      router.refresh();
+    } catch (err) {
+      console.error("Delete error:", err);
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   const filteredIcons = useMemo(

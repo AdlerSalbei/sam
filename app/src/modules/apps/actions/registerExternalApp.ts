@@ -9,7 +9,7 @@ const schema = z.object({
   id:          z.cuid2().optional(),
   name:        z.string().min(1).max(255),
   slug:        z.string().min(1).max(255).transform(value => value.replaceAll(" ", "")),
-  description: z.string().min(1),
+  description: z.string().min(1).max(4096),
   icon:        z.string().optional(),
   imageSrc:    z.string().optional(),
   tags:        z.string().transform((val) => JSON.parse(val) as string[]),
