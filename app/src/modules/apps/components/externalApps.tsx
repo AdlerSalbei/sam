@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useContext } from "react";
 import { Button2, Button2Variant, Button2ColorSchema } from "@/modules/common/components/Button2";
 import Modal from "@/modules/common/components/Modal";
 import * as FaIcons from "react-icons/fa";
@@ -9,6 +9,29 @@ import Image from "next/image";
 import { registerExternalApp } from "@/modules/apps/actions/registerExternalApp";
 import { deleteExternalApp } from "@/modules/apps/actions/deleteExternalApp";
 import { useRouter } from "next/navigation";
+import type { Upload } from "@prisma/client";
+import type { ReactNode } from "react";
+import { createContext } from "react";
+import { ImageSourcePicker } from "./ImageSourcePicker";
+
+interface UploadContextValue {
+  uploads: Upload[];
+}
+
+const UploadContext = createContext<UploadContextValue>({ uploads: [] });
+
+export const useUploadContext = () => useContext(UploadContext);
+
+export const UploadProvider = ({
+  children,
+  uploads,
+}: {
+  children: ReactNode;
+  uploads: Upload[];
+}) => {
+  const value = useMemo(() => ({ uploads }), [uploads]);
+  return <UploadContext.Provider value={value}>{children}</UploadContext.Provider>;
+};
 
 const ICON_LIST = Object.keys(FaIcons).filter((key) => key.startsWith("Fa"));
 
@@ -33,9 +56,6 @@ const emptyForm = {
   imageSrc: "", tags: "", url: "", team: "",
 };
 
-const cellStyle: React.CSSProperties = { padding: "8px 12px", borderRight: "1px solid #e5e7eb" };
-const headerStyle: React.CSSProperties = { ...cellStyle, borderBottom: "4px solid #ccc", textAlign: "left" };
-
 const appToForm = (app: ExternalApp) => ({
   name:        app.name        ?? "",
   slug:        app.slug        ?? "",
@@ -47,6 +67,28 @@ const appToForm = (app: ExternalApp) => ({
   team:        Array.isArray(app.team) ? app.team.join(", ") : (app.team ?? ""),
 });
 
+const cellStyle: React.CSSProperties = {
+  padding: "8px 8px", borderRight: "1px solid #e5e7eb",
+};
+const headerStyle: React.CSSProperties = {
+  ...cellStyle, borderBottom: "4px solid #ccc", textAlign: "left",
+};
+const inputStyle: React.CSSProperties = {
+  padding: "8px 8px", borderRadius: "6px",
+  border: "1px solid rgba(255,255,255,0.1)",
+  background: "rgba(255,255,255,0.05)",
+  color: "white", fontSize: "14px", outline: "none", width: "100%",
+  boxSizing: "border-box",
+};
+const labelStyle: React.CSSProperties = {
+  fontSize: "13px", fontWeight: 500, color: "#9ca3af",
+};
+const iconBtnStyle = (color: string): React.CSSProperties => ({
+  padding: "5px 8px", background: color, color: "#fff",
+  border: "none", borderRadius: "4px", cursor: "pointer",
+  fontSize: "13px", display: "inline-flex", alignItems: "center",
+});
+
 export const ExternalApps = ({ existingApps }: Props) => {
   const [isOpen, setIsOpen]                 = useState(false);
   const [iconPickerOpen, setIconPickerOpen] = useState(false);
@@ -55,6 +97,8 @@ export const ExternalApps = ({ existingApps }: Props) => {
   const [editId, setEditId]                 = useState<string | null>(null);
   const [deleteId, setDeleteId]             = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading]   = useState(false);
+
+  const { uploads } = useUploadContext();
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,6 +118,8 @@ export const ExternalApps = ({ existingApps }: Props) => {
   };
 
   const handleSubmit = async () => {
+    if (form.imageSrc.startsWith("data:")) return;
+
     const nameLower = form.name.trim().toLowerCase();
     const urlLower  = form.url.trim().toLowerCase();
 
@@ -86,7 +132,6 @@ export const ExternalApps = ({ existingApps }: Props) => {
       : undefined;
 
     const formData = new FormData();
-
     const resolvedId = editId ?? duplicate?.id;
     if (resolvedId) formData.append("id", resolvedId);
 
@@ -128,50 +173,31 @@ export const ExternalApps = ({ existingApps }: Props) => {
     : null;
 
   const fields: { label: string; name: keyof typeof emptyForm; placeholder?: string }[] = [
-    { label: "Name",        name: "name",        placeholder: "SILO-Anfrage" },
+    { label: "Name",        name: "name",        placeholder: "App Name" },
     { label: "Description", name: "description", placeholder: "Kurze Beschreibung…" },
-    { label: "Slug",        name: "slug",        placeholder: "silo-request" },
-    { label: "Team",        name: "team",        placeholder: "Waffelkeks" },
-    { label: "Tags",        name: "tags",        placeholder: "featured, economics" },
-    { label: "URL",         name: "url",         placeholder: "https://..." },
+    { label: "Slug",        name: "slug",        placeholder: "url-anhängsel" },
+    { label: "Team",        name: "team",        placeholder: "Member 1, Member 2, …" },
+    { label: "Tags",        name: "tags",        placeholder: "tag1, tag2, …" },
+    { label: "URL",         name: "url",         placeholder: "https://…" },
   ];
-
-  const inputStyle: React.CSSProperties = {
-    padding: "8px 10px", borderRadius: "6px",
-    border: "1px solid rgba(255,255,255,0.1)",
-    background: "rgba(255,255,255,0.05)",
-    color: "white", fontSize: "14px", outline: "none", width: "100%",
-    boxSizing: "border-box",
-  };
-
-  const labelStyle: React.CSSProperties = {
-    fontSize: "13px", fontWeight: 500, color: "#9ca3af",
-  };
-
-  const iconBtnStyle = (color: string): React.CSSProperties => ({
-    padding: "5px 8px", background: color, color: "#fff",
-    border: "none", borderRadius: "4px", cursor: "pointer",
-    fontSize: "13px", display: "inline-flex", alignItems: "center",
-  });
 
   return (
     <>
-      {/* ── Toolbar ── */}
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "12px" }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "8px" }}>
         <Button2
           variant={Button2Variant.Primary}
           colorSchema={Button2ColorSchema.Interaction}
           onClick={() => { setEditId(null); setIsOpen(true); }}
         >
-          Add External App
+          Externe App hinzufügen
         </Button2>
       </div>
 
-      {/* ── Tabelle ── */}
+      {/* Table */}
       <table style={{ borderCollapse: "collapse", width: "100%", border: "1px solid #e5e7eb" }}>
         <thead>
           <tr style={{ borderBottom: "2px solid #ccc" }}>
-            {["Name", "Beschreibung", "Slug", "Team", "Icon", "Image Source", "Tags", "URL", "Aktionen"].map((h) => (
+            {["Name", "Beschreibung", "Slug", "Team", "Icon", "Bild", "Tags", "URL", "Aktionen"].map((h) => (
               <th key={h} style={headerStyle}>{h}</th>
             ))}
           </tr>
@@ -184,7 +210,18 @@ export const ExternalApps = ({ existingApps }: Props) => {
               <td style={cellStyle}>{u.slug}</td>
               <td style={cellStyle}>{Array.isArray(u.team) ? u.team.join(", ") : u.team}</td>
               <td style={cellStyle}>{u.icon}</td>
-              <td style={cellStyle}>{u.imageSrc}</td>
+              <td style={cellStyle}>
+                {u.imageSrc && (
+                  <div style={{ position: "relative", width: "32px", height: "32px" }}>
+                    <Image
+                      src={u.imageSrc}
+                      alt={u.name}
+                      fill
+                      style={{ objectFit: "contain", borderRadius: "4px" }}
+                    />
+                  </div>
+                )}
+              </td>
               <td style={cellStyle}>{Array.isArray(u.tags) ? u.tags.join(", ") : u.tags}</td>
               <td style={cellStyle}>{u.url}</td>
               <td style={{ ...cellStyle, whiteSpace: "nowrap" }}>
@@ -202,17 +239,16 @@ export const ExternalApps = ({ existingApps }: Props) => {
         </tbody>
       </table>
 
-      {/* ── Add / Edit Modal ── */}
       <Modal
-        heading={editId ? "App bearbeiten" : "Add External App"}
+        heading={editId ? "App bearbeiten" : "Externe App hinzufügen"}
         isOpen={isOpen}
         onRequestClose={closeModal}
       >
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px", minWidth: "400px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px", minWidth: "400px" }}>
 
           {fields.map(({ label, name, placeholder }) => (
             <div key={name} style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-              <label style={labelStyle}>{label}</label>
+              <label className="block font-bold">{label}</label>
               <input
                 name={name} value={form[name]} onChange={handleChange}
                 placeholder={placeholder} style={inputStyle}
@@ -220,70 +256,57 @@ export const ExternalApps = ({ existingApps }: Props) => {
             </div>
           ))}
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-
-            {/* Icon Picker */}
+          <div style={{ display: "flex", gap: "16px", alignItems: "flex-start", marginTop: "4px" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-              <label style={labelStyle}>Icon</label>
-              <button
+              <label className="block font-bold">Bild</label>
+              <ImageSourcePicker
+                value={form.imageSrc}
+                onChange={(url) => setForm((prev) => ({ ...prev, imageSrc: url }))}
+                uploads={uploads}
+              />
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+              <label className="block font-bold">Icon</label>
+              <Button2
                 onClick={() => setIconPickerOpen(true)}
+                title="Icon auswählen"
                 style={{
-                  display: "flex", alignItems: "center", gap: "10px",
-                  padding: "8px 10px", borderRadius: "6px",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  width: "48px", height: "48px", borderRadius: "6px",
                   border: "1px solid rgba(255,255,255,0.1)",
                   background: "rgba(255,255,255,0.05)",
-                  color: "white", fontSize: "14px", cursor: "pointer", textAlign: "left",
-                  width: "100%", boxSizing: "border-box",
+                  color: "white", fontSize: "22px", cursor: "pointer",
+                  flexShrink: 0,
                 }}
               >
-                {SelectedIcon ? (
-                  <><SelectedIcon style={{ fontSize: "18px" }} /><span>{form.icon}</span></>
-                ) : (
-                  <span style={{ color: "#6b7280" }}>Icon auswählen…</span>
-                )}
-              </button>
+                {SelectedIcon
+                  ? <SelectedIcon />
+                  : <span style={{ fontSize: "11px", color: "#6b7280", textAlign: "center", lineHeight: 1.2 }}>Icon</span>
+                }
+              </Button2>
             </div>
-
-            {/* Image URL */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-              <label style={labelStyle}>Image URL</label>
-              <input
-                name="imageSrc" value={form.imageSrc} onChange={handleChange}
-                placeholder="https://example.com/image.png" style={inputStyle}
-              />
-              {form.imageSrc && (
-                <div style={{ position: "relative", width: "40px", height: "40px", marginTop: "4px" }}>
-                  <Image
-                    src={form.imageSrc}
-                    alt="Preview"
-                    fill
-                    style={{ objectFit: "contain", borderRadius: "6px", border: "1px solid rgba(255,255,255,0.1)" }}
-                  />
-                </div>
-              )}
-            </div>
-
-
           </div>
 
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "8px" }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "12px" }}>
             <Button2 variant={Button2Variant.Secondary} colorSchema={Button2ColorSchema.Interaction} onClick={closeModal}>
-              Cancel
+              Abbrechen
             </Button2>
             <Button2 variant={Button2Variant.Primary} colorSchema={Button2ColorSchema.Interaction} onClick={handleSubmit}>
-              {editId ? "Speichern" : "Save"}
+              {editId ? "Speichern" : "Hinzufügen"}
             </Button2>
           </div>
         </div>
       </Modal>
 
-      {/* ── Icon-Picker-Modal ── */}
-      <Modal heading="Select an Icon" isOpen={iconPickerOpen} onRequestClose={() => setIconPickerOpen(false)}>
+      <Modal heading="Icon auswählen" isOpen={iconPickerOpen} onRequestClose={() => setIconPickerOpen(false)}>
         <div style={{ display: "flex", flexDirection: "column", gap: "12px", width: "520px" }}>
           <input
-            placeholder="Search icons…" value={iconSearch}
+            placeholder="Icons durchsuchen…"
+            value={iconSearch}
             onChange={(e) => setIconSearch(e.target.value)}
-            style={inputStyle} autoFocus
+            style={inputStyle}
+            autoFocus
           />
           <div style={{
             display: "grid", gridTemplateColumns: "repeat(8, 1fr)",
@@ -294,7 +317,8 @@ export const ExternalApps = ({ existingApps }: Props) => {
               const isSelected = form.icon === iconName;
               return (
                 <button
-                  key={iconName} title={iconName}
+                  key={iconName}
+                  title={iconName}
                   onClick={() => {
                     setForm((prev) => ({ ...prev, icon: iconName }));
                     setIconPickerOpen(false);
@@ -316,12 +340,11 @@ export const ExternalApps = ({ existingApps }: Props) => {
             })}
           </div>
           <p style={{ fontSize: "12px", color: "#6b7280", margin: 0 }}>
-            Showing {filteredIcons.length} of {ICON_LIST.length} icons. Use search to narrow down.
+            {filteredIcons.length} von {ICON_LIST.length} Icons. Suche zum Eingrenzen nutzen.
           </p>
         </div>
       </Modal>
 
-      {/* ── Delete-Bestätigungs-Modal ── */}
       <Modal heading="Eintrag löschen" isOpen={deleteId !== null} onRequestClose={() => setDeleteId(null)}>
         <div style={{ display: "flex", flexDirection: "column", gap: "20px", minWidth: "320px" }}>
           <p style={{ color: "#d1d5db", margin: 0, fontSize: "14px" }}>
