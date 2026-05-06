@@ -52,6 +52,94 @@ export default async function Page() {
 
   return (
     <div className="flex flex-col gap-4">
+      <Day heading="6. Mai 2026">
+        <DayItem
+          heading="Automatische Rollen-Zuweisung"
+          badges={["Neu", "Rollen"]}
+        >
+          <p>
+            Einer Rolle kann nun eine automatische Zuweisung nach einer
+            bestimmten Anzahl an Tagen der Inaktivität konfiguriert werden.
+            Citizen, die sich innerhalb dieses Zeitraums nicht angemeldet haben,
+            erhalten die Rolle automatisch.
+          </p>
+
+          <p>
+            Hierüber kann bspw. die &ldquo;Gesperrt&rdquo;-Rolle automatisch an
+            inaktive Member zugewiesen werden, um deren Login-Berechtigung zu
+            entziehen.
+          </p>
+        </DayItem>
+
+        <DayItem
+          heading="System-Protokoll für automatische Rollen-Änderungen"
+          badges={["Neu", "System Log"]}
+        >
+          <p>
+            Automatische Rollen-Zuweisungen und -Entfernungen werden nun im
+            System-Protokoll protokolliert. Dies ermöglicht eine bessere
+            Nachverfolgung der Änderungen.
+          </p>
+        </DayItem>
+      </Day>
+
+      <Day heading="5. Mai 2026">
+        <DayItem
+          heading="Strafpunkte - Neues Layout"
+          badges={["Änderung", "Strafpunkte"]}
+        >
+          <p>
+            Die Strafpunkte-Übersicht wurde neu gestaltet und entspricht nun dem
+            Layout der anderen Apps wie Events und Tasks. Die Einträge werden
+            nun als flache Liste mit Pagination angezeigt (50 pro Seite).
+          </p>
+
+          <p>
+            Ein neuer Filter ermöglicht es, abgelaufene Strafpunkte ein- oder
+            auszublenden. Der Filter ist auch auf der Detailseite pro Citizen
+            verfügbar.
+          </p>
+        </DayItem>
+
+        <DayItem
+          heading="Pagination für SILC-Transaktionen"
+          badges={["Neu", "SILC"]}
+        >
+          <p>
+            Die SILC-Transaktionen werden nun paginiert angezeigt (100 pro
+            Seite). Dies verbessert die performance bei vielen Transaktionen.
+          </p>
+        </DayItem>
+
+        <DayItem
+          heading="SILC-Benachrichtigung bei Gehalt und Task-Erledigung"
+          badges={["Neu", "SILC", "Benachrichtigungen"]}
+        >
+          <p>
+            Du wirst nun auch benachrichtigt, wenn du SILC durch dein Gehalt
+            erhältst oder wenn du einen Task mit SILC-Belohnung erfüllst.
+          </p>
+        </DayItem>
+
+        <DayItem
+          heading="Automatische Rollen-Zuweisung"
+          badges={["Neu", "Rollen"]}
+        >
+          <p>
+            Einer Rolle kann nun eine automatische Zuweisung nach einer
+            bestimmten Anzahl an Tagen der Inaktivität konfiguriert werden.
+            Citizen, die sich innerhalb dieses Zeitraums nicht angemeldet haben,
+            erhalten die Rolle automatisch.
+          </p>
+
+          <p>
+            Hierüber kann bspw. die &ldquo;Gesperrt&rdquo;-Rolle automatisch an
+            inaktive Member zugewiesen werden, um deren Login-Berechtigung zu
+            entziehen.
+          </p>
+        </DayItem>
+      </Day>
+
       <Day heading="24. März 2026">
         {showSystemLog ? (
           <DayItem heading="System Log" badges={["Neu", "Apps"]}>

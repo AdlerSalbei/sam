@@ -1,4 +1,7 @@
 {
+	"git.worktreeIncludeFiles": [
+		"**/.env",
+	],
 	"cSpell.words": [
 		"algoliasearch",
 		"APGL",
@@ -24,6 +27,7 @@
 		"postgresql",
 		"prisma",
 		"psql",
+		"silc",
 		"simonknittel",
 		"soketi",
 		"tfbackend",
