@@ -80,9 +80,7 @@ const inputStyle: React.CSSProperties = {
   color: "white", fontSize: "14px", outline: "none", width: "100%",
   boxSizing: "border-box",
 };
-const labelStyle: React.CSSProperties = {
-  fontSize: "13px", fontWeight: 500, color: "#9ca3af",
-};
+
 const iconBtnStyle = (color: string): React.CSSProperties => ({
   padding: "5px 8px", background: color, color: "#fff",
   border: "none", borderRadius: "4px", cursor: "pointer",

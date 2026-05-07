@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import Modal from "@/modules/common/components/Modal";
 import { Button2, Button2Variant, Button2ColorSchema } from "@/modules/common/components/Button2";
 import Image from "next/image";
-import type { ExternalApps as ExternalAppsType, Upload } from "@prisma/client";
+import type { ExternalApps, Upload } from "@prisma/client";
 import { ImageUpload } from "@/modules/common/components/ImageUpload";
 import clsx from "clsx";
 
@@ -12,7 +12,7 @@ interface Props {
   value: string;
   onChange: (url: string) => void;
   uploads: Upload[];
-  readonly externalApp?: ExternalAppsType & {
+  readonly externalApp?: ExternalApps & {
     icon: Upload | null;
   };
 }
@@ -33,8 +33,6 @@ export const ImageSourcePicker = ({ value, onChange, uploads, externalApp }: Pro
   const [pickerOpen, setPickerOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [uploadError, setUploadError] = useState<string | null>(null);
-
-  //if (!externalApp) return null;
 
   const filteredUploads = useMemo(
     () =>
