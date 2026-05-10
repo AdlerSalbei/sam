@@ -1,6 +1,6 @@
 import { requireAuthenticationPage } from "@/modules/auth/server";
 import { getExternalApps } from "@/modules/apps/queries";
-import { ExternalApps} from "@/modules/apps/components/externalApps";
+import { ExternalApps} from "@/modules/apps/components/ExternalApps";
 
 export default async function Page() {
   const authentication = await requireAuthenticationPage("/app/apps/management");
