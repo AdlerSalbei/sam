@@ -55,6 +55,12 @@ const CreateSilcTransactionForm = dynamic(() =>
   ),
 );
 
+const CreateExternalAppsForm = dynamic(() =>
+  import("@/modules/apps/components/CreateExternalAppsForm").then(
+    (mod) => mod.CreateExternalAppsForm,
+  ),
+);
+
 export const createForms = {
   citizen: {
     formComponent: CreateCitizenForm,
@@ -89,6 +95,11 @@ export const createForms = {
   silcTransaction: {
     formComponent: CreateSilcTransactionForm,
     modalHeading: "Neue SILC-Transaktion",
+    modalWidth: "w-[480px]",
+  },
+  externalApps: {
+    formComponent: CreateExternalAppsForm,
+    modalHeading: "Neue External App",
     modalWidth: "w-[480px]",
   },
 };

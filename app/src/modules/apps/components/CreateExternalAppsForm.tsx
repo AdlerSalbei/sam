@@ -1,182 +1,55 @@
 "use client";
 
-import { useState, useMemo, useContext } from "react";
+import { CitizenInput } from "@/modules/citizen/components/CitizenInput";
 import { Button2, Button2Variant, Button2ColorSchema } from "@/modules/common/components/Button2";
+import toast from "react-hot-toast";
+import { useActionState } from "react";
+import { unstable_rethrow } from "next/navigation";
 import Modal from "@/modules/common/components/Modal";
 import * as FaIcons from "react-icons/fa";
 import { FaTrash, FaPen } from "react-icons/fa";
-import Image from "next/image";
 import { registerExternalApp } from "@/modules/apps/actions/handleExternalApp";
-import { useRouter } from "next/navigation";
-import type { Upload } from "@prisma/client";
-import type { ReactNode } from "react";
-import { createContext } from "react";
-import { ImageSourcePicker } from "./ImageSourcePicker";
+import { deleteExternalApp } from "@/modules/apps/actions/deleteExternalApp";
 
-interface UploadContextValue {
-  uploads: Upload[];
-}
-
-const UploadContext = createContext<UploadContextValue>({ uploads: [] });
-
-export const useUploadContext = () => useContext(UploadContext);
-
-export const UploadProvider = ({
-  children,
-  uploads,
-}: {
-  children: ReactNode;
-  uploads: Upload[];
-}) => {
-  const value = useMemo(() => ({ uploads }), [uploads]);
-  return <UploadContext.Provider value={value}>{children}</UploadContext.Provider>;
-};
-
-const ICON_LIST = Object.keys(FaIcons).filter((key) => key.startsWith("Fa"));
-
-interface ExternalApp {
-  id: string;
-  name: string;
-  url: string;
-  description?: string;
-  slug?: string;
-  team?: string | string[];
-  icon?: string;
-  imageSrc?: string;
-  tags?: string | string[];
-}
 
 interface Props {
-  existingApps: ExternalApp[];
+  readonly onSuccess?: () => void;
 }
 
-const emptyForm = {
-  name: "", slug: "", description: "", icon: "",
-  imageSrc: "", tags: "", url: "", team: "",
-};
-
-const appToForm = (app: ExternalApp) => ({
-  name:        app.name        ?? "",
-  slug:        app.slug        ?? "",
-  description: app.description ?? "",
-  icon:        app.icon        ?? "",
-  imageSrc:    app.imageSrc    ?? "",
-  tags:        Array.isArray(app.tags) ? app.tags.join(", ") : (app.tags ?? ""),
-  url:         app.url         ?? "",
-  team:        Array.isArray(app.team) ? app.team.join(", ") : (app.team ?? ""),
-});
-
-const cellStyle: React.CSSProperties = {
-  padding: "8px 8px", borderRight: "1px solid #e5e7eb",
-};
-const headerStyle: React.CSSProperties = {
-  ...cellStyle, borderBottom: "4px solid #ccc", textAlign: "left",
-};
-const inputStyle: React.CSSProperties = {
-  padding: "8px 8px", borderRadius: "6px",
-  border: "1px solid rgba(255,255,255,0.1)",
-  background: "rgba(255,255,255,0.05)",
-  color: "white", fontSize: "14px", outline: "none", width: "100%",
-  boxSizing: "border-box",
-};
-
-const iconBtnStyle = (color: string): React.CSSProperties => ({
-  padding: "5px 8px", background: color, color: "#fff",
-  border: "none", borderRadius: "4px", cursor: "pointer",
-  fontSize: "13px", display: "inline-flex", alignItems: "center",
-});
-
-export const ExternalApps = ({ existingApps }: Props) => {
-  const [isOpen, setIsOpen]                 = useState(false);
-  const [iconPickerOpen, setIconPickerOpen] = useState(false);
-  const [iconSearch, setIconSearch]         = useState("");
-  const [form, setForm]                     = useState(emptyForm);
-  const [editId, setEditId]                 = useState<string | null>(null);
-  const [deleteId, setDeleteId]             = useState<string | null>(null);
-  const [deleteLoading, setDeleteLoading]   = useState(false);
-
-  const { uploads } = useUploadContext();
-  const router = useRouter();
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const openEdit = (app: ExternalApp) => {
-    setForm(appToForm(app));
-    setEditId(app.id);
-    setIsOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsOpen(false);
-    setForm(emptyForm);
-    setEditId(null);
-  };
-
-  const handleSubmit = async () => {
-    if (form.imageSrc.startsWith("data:")) return;
-
-    const nameLower = form.name.trim().toLowerCase();
-    const urlLower  = form.url.trim().toLowerCase();
-
-    const duplicate = !editId
-      ? existingApps.find(
-          (app) =>
-            app.name.trim().toLowerCase() === nameLower ||
-            app.url.trim().toLowerCase()  === urlLower,
-        )
-      : undefined;
-
-    const formData = new FormData();
-    const resolvedId = editId ?? duplicate?.id;
-    if (resolvedId) formData.append("id", resolvedId);
-
-    formData.append("name",        form.name);
-    formData.append("slug",        form.slug);
-    formData.append("description", form.description);
-    formData.append("icon",        form.icon);
-    formData.append("imageSrc",    form.imageSrc);
-    formData.append("url",         form.url);
-    formData.append("tags",        JSON.stringify(form.tags.split(",").map((t) => t.trim())));
-    formData.append("team",        JSON.stringify(form.team.split(",").map((t) => t.trim())));
-
-    await registerExternalApp(formData);
-    closeModal();
-    router.refresh();
-  };
-
-  const handleDelete = async () => {
-    if (!deleteId) return;
-    setDeleteLoading(true);
-    try {
-      await deleteExternalApp(deleteId);
-      setDeleteId(null);
-      router.refresh();
-    } catch (err) {
-      console.error("Delete error:", err);
-    } finally {
-      setDeleteLoading(false);
-    }
-  };
-
-  const filteredIcons = useMemo(
-    () => ICON_LIST.filter((n) => n.toLowerCase().includes(iconSearch.toLowerCase())).slice(0, 100),
-    [iconSearch],
-  );
-
-  const SelectedIcon = form.icon
-    ? (FaIcons as Record<string, React.ElementType>)[form.icon]
-    : null;
-
-  const fields: { label: string; name: keyof typeof emptyForm; placeholder?: string }[] = [
-    { label: "Name",        name: "name",        placeholder: "App Name" },
-    { label: "Description", name: "description", placeholder: "Kurze Beschreibung…" },
-    { label: "Slug",        name: "slug",        placeholder: "url-anhängsel" },
-    { label: "Team",        name: "team",        placeholder: "Member 1, Member 2, …" },
-    { label: "Tags",        name: "tags",        placeholder: "tag1, tag2, …" },
-    { label: "URL",         name: "url",         placeholder: "https://…" },
-  ];
+export const CreateExternalAppsForm = ({ onSuccess }: Props) => {
+  const [state, formAction, isPending] = useActionState(
+      async (previousState: unknown, formData: FormData) => {
+        try {
+          const response = await registerExternalApp(formData);
+  
+          if (response.error) {
+            toast.error(response.error);
+            console.error(response);
+            return response;
+          }
+  
+          toast.success(response.success!);
+          if (formData.has("createAnother")) {
+            return response;
+          }
+  
+          onSuccess?.();
+          return response;
+        } catch (error) {
+          unstable_rethrow(error);
+          toast.error(
+            "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
+          );
+          console.error(error);
+          return {
+            error:
+              "Ein unbekannter Fehler ist aufgetreten. Bitte versuche es später erneut.",
+            requestPayload: formData,
+          };
+        }
+      },
+      null,
+    );
 
   return (
     <>
