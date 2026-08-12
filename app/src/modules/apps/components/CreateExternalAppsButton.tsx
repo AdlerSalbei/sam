@@ -13,8 +13,7 @@ export const CreateExternalAppsButton = () => {
       onClick={() => openCreateModal("externalApps")}
       title="Neuen External Apps"
     >
-      <FaPlus />
-      Externe App Hinzufügen
+      <FaPlus /> Externe App Hinzufügen
     </Button2>
   );
 };

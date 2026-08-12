@@ -12,17 +12,11 @@ import { z } from "zod";
 const schema = z.object({
   id: z.cuid2().optional(),
   name: z.string().min(1).max(255),
-  slug: z
-    .string()
-    .min(1)
-    .max(255)
-    .transform((value) => value.replaceAll(" ", "")),
+  slug: z.string().min(1).max(255).transform((value) => value.replaceAll(" ", "")),
   description: z.string().max(512),
   icon: z.string().max(512).optional(),
   imageSrc: z.string().max(512).optional(),
   tags: z.string().transform((val) => JSON.parse(val) as string[]),
-  // Team selection stores citizen IDs. Citizens (Entity.id) use plain cuid(),
-  // not cuid(2) - only ExternalApps.id itself is cuid(2).
   team: z.array(z.string().trim().cuid()).max(50),
   url: z.httpUrl(),
 });

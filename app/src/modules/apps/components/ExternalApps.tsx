@@ -1,17 +1,14 @@
 "use client";
 
 import { deleteExternalApp } from "@/modules/apps/actions/deleteExternalApp";
-import {
-  Button2,
-  Button2ColorSchema,
-  Button2Variant,
-} from "@/modules/common/components/Button2";
+import {Button2,Button2ColorSchema,Button2Variant,} from "@/modules/common/components/Button2";
 import Modal from "@/modules/common/components/Modal";
 import type { Upload } from "@prisma/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { createContext, useContext, useMemo, useState } from "react";
+import * as FaIcons from "react-icons/fa";
 import { FaPen, FaTrash } from "react-icons/fa";
 import { CreateExternalAppsButton } from "./CreateExternalAppsButton";
 import { CreateExternalAppsForm } from "./CreateExternalAppsForm";
@@ -163,7 +160,14 @@ export const ExternalApps = ({ existingApps }: Props) => {
               <td style={cellStyle}>
                 {Array.isArray(u.team) ? u.team.join(", ") : u.team}
               </td>
-              <td style={cellStyle}>{u.icon}</td>
+              <td style={cellStyle}>
+                {u.icon
+                  ? (() => {
+                      const Icon = (FaIcons as Record<string, React.ElementType>)[u.icon];
+                      return Icon ? <Icon /> : u.icon;
+                    })()
+                  : null}
+              </td>
               <td style={cellStyle}>
                 {u.imageSrc && (
                   <div

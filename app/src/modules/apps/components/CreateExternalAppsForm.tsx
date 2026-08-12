@@ -1,16 +1,17 @@
 "use client";
 
+import Modal from "@/modules/common/components/Modal";
 import { registerExternalApp } from "@/modules/apps/actions/handleExternalApp";
 import { CitizenInput } from "@/modules/citizen/components/CitizenInput";
-import {
-  Button2,
-  Button2ColorSchema,
-  Button2Variant,
-} from "@/modules/common/components/Button2";
+import {Button2,Button2ColorSchema,Button2Variant,} from "@/modules/common/components/Button2";
+import useUpload from "@/modules/common/utils/useUpload";
+import { env } from "@/env";
+import Image from "next/image";
 import { unstable_rethrow } from "next/navigation";
-import { useActionState, useId, useState } from "react";
+import { type ChangeEventHandler, useActionState, useEffect, useId, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { FaSave, FaSpinner } from "react-icons/fa";
+import * as FaIcons from "react-icons/fa";
+import { FaSave, FaSpinner, FaTimes, FaChevronDown } from "react-icons/fa";
 
 interface ExternalAppInitialValues {
   id?: string;
@@ -42,6 +43,155 @@ const inputStyle: React.CSSProperties = {
   boxSizing: "border-box",
 };
 
+const ALL_FA_ICONS = Object.keys(FaIcons).filter((k) => k.startsWith("Fa"));
+
+const IconPicker = ({
+  value,
+  onChange,
+  id,
+}: {
+  value: string;
+  onChange: (name: string) => void;
+  id?: string;
+}) => {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    if (!open) setSearch("");
+  }, [open]);
+
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase();
+    return ALL_FA_ICONS.filter((n) => n.toLowerCase().includes(q));
+  }, [search]);
+
+  const SelectedIcon = value
+    ? (FaIcons as Record<string, React.ElementType>)[value] ?? null
+    : null;
+
+  return (
+    <div style={{ position: "relative" }}>
+      {/* Trigger */}
+      <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+        <div
+          id={id}
+          onClick={() => setOpen((o) => !o)}
+          style={{
+            width: "64px",
+            height: "64px",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: "6px",
+            background: "rgba(255,255,255,0.05)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            flexShrink: 0,
+            fontSize: "24px",
+            color: "white",
+          }}
+        >
+          {SelectedIcon ? (
+            <SelectedIcon />
+          ) : (
+            <FaChevronDown style={{ opacity: 0.4, fontSize: "16px" }} />
+          )}
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1 }}>
+          {value && (
+            <span style={{ fontSize: "13px", color: "rgba(255,255,255,0.8)" }}>{value}</span>
+          )}
+          {value && (
+            <button
+              type="button"
+              onClick={() => onChange("")}
+              style={{
+                background: "none",
+                border: "none",
+                color: "rgba(255,255,255,0.4)",
+                cursor: "pointer",
+                fontSize: "12px",
+                padding: 0,
+                textAlign: "left",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
+              <FaTimes style={{ fontSize: "10px" }} /> Entfernen
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Modal picker */}
+      <Modal
+        heading="Icon auswählen"
+        isOpen={open}
+        onRequestClose={() => setOpen(false)}
+        className="w-[600px]"
+      >
+        <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
+          <input
+            autoFocus
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Suchen…"
+            style={inputStyle}
+          />
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(10, 1fr)",
+              gap: "6px",
+              maxHeight: "420px",
+              overflowY: "auto",
+            }}
+          >
+            {filtered.map((name) => {
+              const Icon = (FaIcons as Record<string, React.ElementType>)[name];
+              return (
+                <button
+                  key={name}
+                  type="button"
+                  title={name}
+                  onClick={() => {
+                    onChange(name);
+                    setOpen(false);
+                  }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "10px",
+                    background:
+                      value === name
+                        ? "rgba(255,255,255,0.2)"
+                        : "rgba(255,255,255,0.05)",
+                    border: "none",
+                    borderRadius: "4px",
+                    color: "white",
+                    cursor: "pointer",
+                    fontSize: "18px",
+                  }}
+                >
+                  <Icon />
+                </button>
+              );
+            })}
+          </div>
+          {filtered.length === 0 && (
+            <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", textAlign: "center" }}>
+              Kein Icon gefunden
+            </span>
+          )}
+        </div>
+      </Modal>
+    </div>
+  );
+};
+
 export const CreateExternalAppsForm = ({
   className,
   initial,
@@ -56,6 +206,24 @@ export const CreateExternalAppsForm = ({
   const urlId = useId();
 
   const [tags, setTags] = useState((initial?.tags ?? []).join(", "));
+  const [icon, setIcon] = useState(initial?.icon ?? "");
+  const [imageSrc, setImageSrc] = useState(initial?.imageSrc ?? "");
+  const [imageUploading, setImageUploading] = useState(false);
+  const { setFile, upload, setUpload } = useUpload();
+
+  useEffect(() => {
+    if (!upload) return;
+    setImageSrc(`https://${env.NEXT_PUBLIC_S3_PUBLIC_URL}/${upload}`);
+    setUpload(null);
+    setImageUploading(false);
+  }, [upload]);
+
+  const handleImageChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageUploading(true);
+    setFile(file);
+  };
 
   const [, formAction, isPending] = useActionState(
     async (previousState: unknown, formData: FormData) => {
@@ -74,7 +242,6 @@ export const CreateExternalAppsForm = ({
 
         if (response.error) {
           toast.error(response.error);
-          console.error(response);
           return response;
         }
 
@@ -148,29 +315,75 @@ export const CreateExternalAppsForm = ({
         />
       </div>
 
-      <div>
-        <label className="block" htmlFor={iconId}>
-          Icon
-        </label>
-        <input
-          id={iconId}
-          name="icon"
-          defaultValue={initial?.icon}
-          placeholder="z. B. FaAppStore"
-          style={inputStyle}
-        />
-      </div>
+      <div style={{ display: "flex", gap: "24px" }}>
+        <div>
+          <label className="block" htmlFor={iconId}>
+            Icon
+          </label>
+          <input type="hidden" name="icon" value={icon} />
+          <IconPicker id={iconId} value={icon} onChange={setIcon} />
+        </div>
 
-      <div>
-        <label className="block" htmlFor={imageSrcId}>
-          Bild-URL
-        </label>
-        <input
-          id={imageSrcId}
-          name="imageSrc"
-          defaultValue={initial?.imageSrc}
-          style={inputStyle}
-        />
+        <div>
+          <label className="block" htmlFor={imageSrcId}>
+            Bild
+          </label>
+          <input type="hidden" name="imageSrc" value={imageSrc} />
+          <div
+            id={imageSrcId}
+            style={{
+              position: "relative",
+              width: "128px",
+              height: "128px",
+              border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: "6px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+              marginTop: "4px",
+            }}
+          >
+            {imageSrc && !imageUploading ? (
+              <Image
+                src={imageSrc}
+                alt="Vorschau"
+                fill
+                style={{ objectFit: "contain" }}
+                unoptimized
+              />
+            ) : imageUploading ? (
+              <FaSpinner
+                className="animate-spin"
+                style={{ color: "#ef4444", fontSize: "24px" }}
+              />
+            ) : (
+              <span
+                style={{
+                  fontSize: "12px",
+                  color: "rgba(255,255,255,0.5)",
+                  textAlign: "center",
+                  padding: "8px",
+                }}
+              >
+                Bild hochladen
+              </span>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              disabled={imageUploading || isPending}
+              onChange={handleImageChange}
+              style={{
+                position: "absolute",
+                inset: 0,
+                opacity: 0,
+                cursor: "pointer",
+                fontSize: 0,
+              }}
+            />
+          </div>
+        </div>
       </div>
 
       {/* CitizenInput renders its own hidden team[] inputs per selected
