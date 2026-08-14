@@ -16,13 +16,13 @@ const schema = z.object({
   description: z.string().max(512),
   icon: z.string().max(512).optional(),
   imageSrc: z.string().max(512).optional(),
-  tags: z.string().transform((val) => JSON.parse(val) as string[]),
+  tagIds: z.array(z.string().min(1)).max(50).default([]),
   team: z.array(z.string().trim().cuid()).max(50),
   url: z.httpUrl(),
 });
 
 export async function deleteExternalApp(id: string): Promise<void> {
-  await prisma.ExternalApps.delete({ where: { id } });
+  await prisma.externalApps.delete({ where: { id } });
 }
 
 export const registerExternalApp = async (formData: FormData) => {
@@ -31,7 +31,7 @@ export const registerExternalApp = async (formData: FormData) => {
   try {
     const authentication =
       await requireAuthenticationAction("handleExternalApp");
-    await authentication.authorizeAction("update", "create", "delete");
+    await authentication.authorizeAction("apps", "manage");
     if (!authentication.session.entity)
       return {
         error: t("Common.forbidden"),
@@ -48,7 +48,7 @@ export const registerExternalApp = async (formData: FormData) => {
       description: formData.get("description") ?? "",
       icon: formData.get("icon") || undefined,
       imageSrc: formData.get("imageSrc") || undefined,
-      tags: formData.get("tags"),
+      tagIds: formData.getAll("tagIds[]"),
       team: formData.getAll("team[]"),
       url: formData.get("url"),
     });
@@ -59,16 +59,16 @@ export const registerExternalApp = async (formData: FormData) => {
         requestPayload: formData,
       };
 
-    const { id, ...data } = result.data;
+    const { id, tagIds, ...data } = result.data;
 
     if (id) {
-      await prisma.ExternalApps.update({
+      await prisma.externalApps.update({
         where: { id },
-        data,
+        data: { ...data, tags: { set: tagIds.map((tid) => ({ id: tid })) } },
       });
     } else {
-      await prisma.ExternalApps.create({
-        data,
+      await prisma.externalApps.create({
+        data: { ...data, tags: { connect: tagIds.map((tid) => ({ id: tid })) } },
       });
     }
 

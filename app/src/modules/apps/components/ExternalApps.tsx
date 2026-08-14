@@ -9,8 +9,7 @@ import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { createContext, useContext, useMemo, useState } from "react";
 import * as FaIcons from "react-icons/fa";
-import { FaPen, FaTrash } from "react-icons/fa";
-import { CreateExternalAppsButton } from "./CreateExternalAppsButton";
+import { FaPen, FaPlus, FaTrash } from "react-icons/fa";
 import { CreateExternalAppsForm } from "./CreateExternalAppsForm";
 
 interface UploadContextValue {
@@ -43,11 +42,17 @@ interface ExternalApp {
   team?: string | string[];
   icon?: string;
   imageSrc?: string;
-  tags?: string | string[];
+  tags?: { id: string; name: string }[];
+}
+
+interface AppTag {
+  id: string;
+  name: string;
 }
 
 interface Props {
   existingApps: ExternalApp[];
+  availableTags: AppTag[];
 }
 
 const appToInitial = (app: ExternalApp) => ({
@@ -57,7 +62,7 @@ const appToInitial = (app: ExternalApp) => ({
   description: app.description ?? "",
   icon: app.icon ?? "",
   imageSrc: app.imageSrc ?? "",
-  tags: Array.isArray(app.tags) ? app.tags : app.tags ? [app.tags] : [],
+  tags: app.tags ?? [],
   url: app.url ?? "",
   team: Array.isArray(app.team) ? app.team : app.team ? [app.team] : [],
 });
@@ -83,8 +88,9 @@ const iconBtnStyle = (color: string): React.CSSProperties => ({
   alignItems: "center",
 });
 
-export const ExternalApps = ({ existingApps }: Props) => {
+export const ExternalApps = ({ existingApps, availableTags }: Props) => {
   const [editingApp, setEditingApp] = useState<ExternalApp | null>(null);
+  const [creating, setCreating] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
@@ -121,7 +127,12 @@ export const ExternalApps = ({ existingApps }: Props) => {
           marginBottom: "8px",
         }}
       >
-        <CreateExternalAppsButton />
+        <Button2
+          variant={Button2Variant.Secondary}
+          onClick={() => setCreating(true)}
+        >
+          <FaPlus /> Externe App hinzufügen
+        </Button2>
       </div>
 
       {/* Table */}
@@ -187,7 +198,7 @@ export const ExternalApps = ({ existingApps }: Props) => {
                 )}
               </td>
               <td style={cellStyle}>
-                {Array.isArray(u.tags) ? u.tags.join(", ") : u.tags}
+                {u.tags?.map((t) => t.name).join(", ")}
               </td>
               <td style={cellStyle}>{u.url}</td>
               <td style={{ ...cellStyle, whiteSpace: "nowrap" }}>
@@ -214,6 +225,17 @@ export const ExternalApps = ({ existingApps }: Props) => {
       </table>
 
       <Modal
+        heading="Neue App erstellen"
+        isOpen={creating}
+        onRequestClose={() => setCreating(false)}
+      >
+        <CreateExternalAppsForm
+          availableTags={availableTags}
+          onSuccess={() => setCreating(false)}
+        />
+      </Modal>
+
+      <Modal
         heading="App bearbeiten"
         isOpen={editingApp !== null}
         onRequestClose={closeEdit}
@@ -221,6 +243,7 @@ export const ExternalApps = ({ existingApps }: Props) => {
         {editingApp && (
           <CreateExternalAppsForm
             initial={appToInitial(editingApp)}
+            availableTags={availableTags}
             onSuccess={closeEdit}
           />
         )}

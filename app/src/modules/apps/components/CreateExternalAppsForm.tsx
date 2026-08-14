@@ -1,6 +1,7 @@
 "use client";
 
 import Modal from "@/modules/common/components/Modal";
+import { createAppTag } from "@/modules/apps/actions/createAppTag";
 import { registerExternalApp } from "@/modules/apps/actions/handleExternalApp";
 import { CitizenInput } from "@/modules/citizen/components/CitizenInput";
 import {Button2,Button2ColorSchema,Button2Variant,} from "@/modules/common/components/Button2";
@@ -8,10 +9,15 @@ import useUpload from "@/modules/common/utils/useUpload";
 import { env } from "@/env";
 import Image from "next/image";
 import { unstable_rethrow } from "next/navigation";
-import { type ChangeEventHandler, useActionState, useEffect, useId, useMemo, useState } from "react";
+import { type ChangeEventHandler, useActionState, useEffect, useId, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import * as FaIcons from "react-icons/fa";
-import { FaSave, FaSpinner, FaTimes, FaChevronDown } from "react-icons/fa";
+import { FaSave, FaSpinner, FaTimes, FaChevronDown, FaPlus } from "react-icons/fa";
+
+interface AppTag {
+  id: string;
+  name: string;
+}
 
 interface ExternalAppInitialValues {
   id?: string;
@@ -20,7 +26,7 @@ interface ExternalAppInitialValues {
   description?: string;
   icon?: string;
   imageSrc?: string;
-  tags?: string[];
+  tags?: AppTag[];
   team?: string[];
   url?: string;
 }
@@ -28,6 +34,7 @@ interface ExternalAppInitialValues {
 interface Props {
   readonly className?: string;
   readonly initial?: ExternalAppInitialValues;
+  readonly availableTags: AppTag[];
   readonly onSuccess?: () => void;
 }
 
@@ -44,6 +51,203 @@ const inputStyle: React.CSSProperties = {
 };
 
 const ALL_FA_ICONS = Object.keys(FaIcons).filter((k) => k.startsWith("Fa"));
+
+const TagPicker = ({
+  selected,
+  available,
+  onChange,
+  id,
+}: {
+  selected: AppTag[];
+  available: AppTag[];
+  onChange: (tags: AppTag[]) => void;
+  id?: string;
+}) => {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [newTagName, setNewTagName] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [localAvailable, setLocalAvailable] = useState(available);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!dropdownOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setDropdownOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [dropdownOpen]);
+
+  const toggle = (tag: AppTag) => {
+    const isSelected = selected.some((t) => t.id === tag.id);
+    onChange(isSelected ? selected.filter((t) => t.id !== tag.id) : [...selected, tag]);
+  };
+
+  const handleCreate = async () => {
+    if (!newTagName.trim()) return;
+    setCreating(true);
+    const fd = new FormData();
+    fd.set("name", newTagName.trim());
+    const result = await createAppTag(fd);
+    setCreating(false);
+    if (result.tag) {
+      setLocalAvailable((prev) =>
+        prev.some((t) => t.id === result.tag!.id) ? prev : [...prev, result.tag!],
+      );
+      onChange([...selected, result.tag]);
+      setNewTagName("");
+      setCreateOpen(false);
+    } else {
+      toast.error(result.error ?? "Fehler beim Erstellen des Tags.");
+    }
+  };
+
+  return (
+    <div style={{ display: "flex", gap: "6px", alignItems: "flex-start" }}>
+      {/* Multi-select dropdown */}
+      <div ref={ref} id={id} style={{ position: "relative", flex: 1 }}>
+        <div
+          onClick={() => setDropdownOpen((o) => !o)}
+          style={{
+            ...inputStyle,
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "4px",
+            cursor: "pointer",
+            minHeight: "36px",
+            alignItems: "center",
+          }}
+        >
+          {selected.length === 0 ? (
+            <span style={{ color: "rgba(255,255,255,0.35)", fontSize: "13px" }}>Tags auswählen…</span>
+          ) : (
+            selected.map((tag) => (
+              <span
+                key={tag.id}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "3px",
+                  padding: "1px 7px",
+                  background: "rgba(255,255,255,0.15)",
+                  borderRadius: "999px",
+                  fontSize: "12px",
+                }}
+              >
+                {tag.name}
+                <FaTimes
+                  style={{ cursor: "pointer", fontSize: "9px", opacity: 0.7 }}
+                  onClick={(e) => { e.stopPropagation(); toggle(tag); }}
+                />
+              </span>
+            ))
+          )}
+        </div>
+
+        {dropdownOpen && (
+          <div
+            style={{
+              position: "absolute",
+              zIndex: 50,
+              top: "calc(100% + 4px)",
+              left: 0,
+              right: 0,
+              background: "#1e1e2e",
+              border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: "6px",
+              overflow: "hidden",
+            }}
+          >
+            {localAvailable.length === 0 ? (
+              <div style={{ padding: "10px 12px", fontSize: "13px", color: "rgba(255,255,255,0.4)" }}>
+                Noch keine Tags vorhanden.
+              </div>
+            ) : (
+              localAvailable.map((tag) => {
+                const isSelected = selected.some((t) => t.id === tag.id);
+                return (
+                  <div
+                    key={tag.id}
+                    onClick={() => toggle(tag)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      padding: "8px 12px",
+                      cursor: "pointer",
+                      background: isSelected ? "rgba(255,255,255,0.1)" : "transparent",
+                      fontSize: "13px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: "14px",
+                        height: "14px",
+                        border: "1px solid rgba(255,255,255,0.3)",
+                        borderRadius: "3px",
+                        background: isSelected ? "rgba(255,255,255,0.6)" : "transparent",
+                        flexShrink: 0,
+                      }}
+                    />
+                    {tag.name}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Create tag button */}
+      <Button2
+        type="button"
+        variant={Button2Variant.Secondary}
+        colorSchema={Button2ColorSchema.Interaction}
+        onClick={() => { setCreateOpen(true); setDropdownOpen(false); }}
+        title="Neuen Tag erstellen"
+        style={{ flexShrink: 0 }}
+      >
+        <FaPlus />
+      </Button2>
+
+      {/* Create tag modal */}
+      <Modal heading="Neuen Tag erstellen" isOpen={createOpen} onRequestClose={() => { setCreateOpen(false); setNewTagName(""); }}>
+        <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "12px", minWidth: "280px" }}>
+          <input
+            autoFocus
+            value={newTagName}
+            onChange={(e) => setNewTagName(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); void handleCreate(); } }}
+            placeholder="Tag-Name…"
+            style={inputStyle}
+            disabled={creating}
+          />
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
+            <Button2
+              type="button"
+              variant={Button2Variant.Secondary}
+              colorSchema={Button2ColorSchema.Interaction}
+              onClick={() => { setCreateOpen(false); setNewTagName(""); }}
+            >
+              Abbrechen
+            </Button2>
+            <Button2
+              type="button"
+              variant={Button2Variant.Primary}
+              colorSchema={Button2ColorSchema.Interaction}
+              onClick={() => void handleCreate()}
+              disabled={creating || !newTagName.trim()}
+            >
+              {creating ? <FaSpinner className="animate-spin" /> : <FaSave />}
+              Erstellen
+            </Button2>
+          </div>
+        </div>
+      </Modal>
+    </div>
+  );
+};
 
 const IconPicker = ({
   value,
@@ -195,6 +399,7 @@ const IconPicker = ({
 export const CreateExternalAppsForm = ({
   className,
   initial,
+  availableTags,
   onSuccess,
 }: Props) => {
   const nameId = useId();
@@ -205,7 +410,7 @@ export const CreateExternalAppsForm = ({
   const tagsId = useId();
   const urlId = useId();
 
-  const [tags, setTags] = useState((initial?.tags ?? []).join(", "));
+  const [selectedTags, setSelectedTags] = useState<AppTag[]>(initial?.tags ?? []);
   const [icon, setIcon] = useState(initial?.icon ?? "");
   const [imageSrc, setImageSrc] = useState(initial?.imageSrc ?? "");
   const [imageUploading, setImageUploading] = useState(false);
@@ -227,15 +432,9 @@ export const CreateExternalAppsForm = ({
 
   const [, formAction, isPending] = useActionState(
     async (previousState: unknown, formData: FormData) => {
-      formData.set(
-        "tags",
-        JSON.stringify(
-          tags
-            .split(",")
-            .map((tag) => tag.trim())
-            .filter(Boolean),
-        ),
-      );
+      for (const tag of selectedTags) {
+        formData.append("tagIds[]", tag.id);
+      }
 
       try {
         const response = await registerExternalApp(formData);
@@ -394,12 +593,11 @@ export const CreateExternalAppsForm = ({
         <label className="block" htmlFor={tagsId}>
           Tags
         </label>
-        <input
+        <TagPicker
           id={tagsId}
-          value={tags}
-          onChange={(event) => setTags(event.target.value)}
-          placeholder="tag1, tag2, …"
-          style={inputStyle}
+          selected={selectedTags}
+          available={availableTags}
+          onChange={setSelectedTags}
         />
       </div>
 

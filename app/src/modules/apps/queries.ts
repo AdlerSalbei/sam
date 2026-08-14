@@ -9,6 +9,12 @@ export const getExternalApps = cache(
     const authentication = await requireAuthentication();
     if (!(await authentication.authorize("apps", "manage"))) forbidden();
 
-    return prisma.ExternalApps.findMany();
+    return prisma.externalApps.findMany({ include: { tags: true } });
+  }),
+);
+
+export const getAppTags = cache(
+  withTrace("getAppTags", async () => {
+    return prisma.appTag.findMany({ orderBy: { name: "asc" } });
   }),
 );
