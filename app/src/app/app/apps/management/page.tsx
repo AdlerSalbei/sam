@@ -1,12 +1,17 @@
+import { ExternalApps } from "@/modules/apps/components/ExternalApps";
+import { getAppTags, getExternalApps } from "@/modules/apps/queries";
 import { requireAuthenticationPage } from "@/modules/auth/server";
-import { getExternalApps } from "@/modules/apps/queries";
-import { ExternalApps} from "@/modules/apps/components/ExternalApps";
 
 export default async function Page() {
-  const authentication = await requireAuthenticationPage("/app/apps/management");
+  const authentication = await requireAuthenticationPage(
+    "/app/apps/management",
+  );
   await authentication.authorizePage("apps", "manage");
 
-  const rows = await getExternalApps();
+  const [rows, availableTags] = await Promise.all([
+    getExternalApps(),
+    getAppTags(),
+  ]);
 
-  return <ExternalApps existingApps={rows} />;
+  return <ExternalApps existingApps={rows} availableTags={availableTags} />;
 }

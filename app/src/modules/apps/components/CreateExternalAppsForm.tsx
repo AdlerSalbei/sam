@@ -1,18 +1,36 @@
 "use client";
 
-import Modal from "@/modules/common/components/Modal";
+import { env } from "@/env";
 import { createAppTag } from "@/modules/apps/actions/createAppTag";
 import { registerExternalApp } from "@/modules/apps/actions/handleExternalApp";
 import { CitizenInput } from "@/modules/citizen/components/CitizenInput";
-import {Button2,Button2ColorSchema,Button2Variant,} from "@/modules/common/components/Button2";
+import {
+  Button2,
+  Button2ColorSchema,
+  Button2Variant,
+} from "@/modules/common/components/Button2";
+import Modal from "@/modules/common/components/Modal";
 import useUpload from "@/modules/common/utils/useUpload";
-import { env } from "@/env";
 import Image from "next/image";
 import { unstable_rethrow } from "next/navigation";
-import { type ChangeEventHandler, useActionState, useEffect, useId, useMemo, useRef, useState } from "react";
+import {
+  type ChangeEventHandler,
+  useActionState,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import toast from "react-hot-toast";
 import * as FaIcons from "react-icons/fa";
-import { FaSave, FaSpinner, FaTimes, FaChevronDown, FaPlus } from "react-icons/fa";
+import {
+  FaChevronDown,
+  FaPlus,
+  FaSave,
+  FaSpinner,
+  FaTimes,
+} from "react-icons/fa";
 
 interface AppTag {
   id: string;
@@ -73,7 +91,8 @@ const TagPicker = ({
   useEffect(() => {
     if (!dropdownOpen) return;
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setDropdownOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node))
+        setDropdownOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -81,7 +100,9 @@ const TagPicker = ({
 
   const toggle = (tag: AppTag) => {
     const isSelected = selected.some((t) => t.id === tag.id);
-    onChange(isSelected ? selected.filter((t) => t.id !== tag.id) : [...selected, tag]);
+    onChange(
+      isSelected ? selected.filter((t) => t.id !== tag.id) : [...selected, tag],
+    );
   };
 
   const handleCreate = async () => {
@@ -93,7 +114,9 @@ const TagPicker = ({
     setCreating(false);
     if (result.tag) {
       setLocalAvailable((prev) =>
-        prev.some((t) => t.id === result.tag!.id) ? prev : [...prev, result.tag!],
+        prev.some((t) => t.id === result.tag!.id)
+          ? prev
+          : [...prev, result.tag!],
       );
       onChange([...selected, result.tag]);
       setNewTagName("");
@@ -120,7 +143,9 @@ const TagPicker = ({
           }}
         >
           {selected.length === 0 ? (
-            <span style={{ color: "rgba(255,255,255,0.35)", fontSize: "13px" }}>Tags auswählen…</span>
+            <span style={{ color: "rgba(255,255,255,0.35)", fontSize: "13px" }}>
+              Tags auswählen…
+            </span>
           ) : (
             selected.map((tag) => (
               <span
@@ -138,7 +163,10 @@ const TagPicker = ({
                 {tag.name}
                 <FaTimes
                   style={{ cursor: "pointer", fontSize: "9px", opacity: 0.7 }}
-                  onClick={(e) => { e.stopPropagation(); toggle(tag); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggle(tag);
+                  }}
                 />
               </span>
             ))
@@ -160,7 +188,13 @@ const TagPicker = ({
             }}
           >
             {localAvailable.length === 0 ? (
-              <div style={{ padding: "10px 12px", fontSize: "13px", color: "rgba(255,255,255,0.4)" }}>
+              <div
+                style={{
+                  padding: "10px 12px",
+                  fontSize: "13px",
+                  color: "rgba(255,255,255,0.4)",
+                }}
+              >
                 Noch keine Tags vorhanden.
               </div>
             ) : (
@@ -176,7 +210,9 @@ const TagPicker = ({
                       gap: "8px",
                       padding: "8px 12px",
                       cursor: "pointer",
-                      background: isSelected ? "rgba(255,255,255,0.1)" : "transparent",
+                      background: isSelected
+                        ? "rgba(255,255,255,0.1)"
+                        : "transparent",
                       fontSize: "13px",
                     }}
                   >
@@ -186,7 +222,9 @@ const TagPicker = ({
                         height: "14px",
                         border: "1px solid rgba(255,255,255,0.3)",
                         borderRadius: "3px",
-                        background: isSelected ? "rgba(255,255,255,0.6)" : "transparent",
+                        background: isSelected
+                          ? "rgba(255,255,255,0.6)"
+                          : "transparent",
                         flexShrink: 0,
                       }}
                     />
@@ -204,7 +242,10 @@ const TagPicker = ({
         type="button"
         variant={Button2Variant.Secondary}
         colorSchema={Button2ColorSchema.Interaction}
-        onClick={() => { setCreateOpen(true); setDropdownOpen(false); }}
+        onClick={() => {
+          setCreateOpen(true);
+          setDropdownOpen(false);
+        }}
         title="Neuen Tag erstellen"
         style={{ flexShrink: 0 }}
       >
@@ -212,23 +253,48 @@ const TagPicker = ({
       </Button2>
 
       {/* Create tag modal */}
-      <Modal heading="Neuen Tag erstellen" isOpen={createOpen} onRequestClose={() => { setCreateOpen(false); setNewTagName(""); }}>
-        <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "12px", minWidth: "280px" }}>
+      <Modal
+        heading="Neuen Tag erstellen"
+        isOpen={createOpen}
+        onRequestClose={() => {
+          setCreateOpen(false);
+          setNewTagName("");
+        }}
+      >
+        <div
+          style={{
+            padding: "16px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px",
+            minWidth: "280px",
+          }}
+        >
           <input
             autoFocus
             value={newTagName}
             onChange={(e) => setNewTagName(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); void handleCreate(); } }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                void handleCreate();
+              }
+            }}
             placeholder="Tag-Name…"
             style={inputStyle}
             disabled={creating}
           />
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}>
+          <div
+            style={{ display: "flex", justifyContent: "flex-end", gap: "8px" }}
+          >
             <Button2
               type="button"
               variant={Button2Variant.Secondary}
               colorSchema={Button2ColorSchema.Interaction}
-              onClick={() => { setCreateOpen(false); setNewTagName(""); }}
+              onClick={() => {
+                setCreateOpen(false);
+                setNewTagName("");
+              }}
             >
               Abbrechen
             </Button2>
@@ -271,7 +337,7 @@ const IconPicker = ({
   }, [search]);
 
   const SelectedIcon = value
-    ? (FaIcons as Record<string, React.ElementType>)[value] ?? null
+    ? ((FaIcons as Record<string, React.ElementType>)[value] ?? null)
     : null;
 
   return (
@@ -302,9 +368,18 @@ const IconPicker = ({
             <FaChevronDown style={{ opacity: 0.4, fontSize: "16px" }} />
           )}
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1 }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+            flex: 1,
+          }}
+        >
           {value && (
-            <span style={{ fontSize: "13px", color: "rgba(255,255,255,0.8)" }}>{value}</span>
+            <span style={{ fontSize: "13px", color: "rgba(255,255,255,0.8)" }}>
+              {value}
+            </span>
           )}
           {value && (
             <button
@@ -336,7 +411,14 @@ const IconPicker = ({
         onRequestClose={() => setOpen(false)}
         className="w-[600px]"
       >
-        <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
+        <div
+          style={{
+            padding: "16px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px",
+          }}
+        >
           <input
             autoFocus
             value={search}
@@ -386,7 +468,13 @@ const IconPicker = ({
             })}
           </div>
           {filtered.length === 0 && (
-            <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", textAlign: "center" }}>
+            <span
+              style={{
+                fontSize: "12px",
+                color: "rgba(255,255,255,0.4)",
+                textAlign: "center",
+              }}
+            >
               Kein Icon gefunden
             </span>
           )}
@@ -410,7 +498,9 @@ export const CreateExternalAppsForm = ({
   const tagsId = useId();
   const urlId = useId();
 
-  const [selectedTags, setSelectedTags] = useState<AppTag[]>(initial?.tags ?? []);
+  const [selectedTags, setSelectedTags] = useState<AppTag[]>(
+    initial?.tags ?? [],
+  );
   const [icon, setIcon] = useState(initial?.icon ?? "");
   const [imageSrc, setImageSrc] = useState(initial?.imageSrc ?? "");
   const [imageUploading, setImageUploading] = useState(false);
@@ -585,8 +675,6 @@ export const CreateExternalAppsForm = ({
         </div>
       </div>
 
-      {/* CitizenInput renders its own hidden team[] inputs per selected
-          citizen and submits directly as part of the native FormData. */}
       <CitizenInput name="team" multiple defaultValue={initial?.team} />
 
       <div>
